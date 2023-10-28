@@ -29,5 +29,9 @@ export enum ValidationErrorMessages {
   TAGNAME_CONFLICT = 'Tên thẻ đã tồn tại',
   TAGNAME_REQUIRE = 'Vui lòng điền tên thẻ',
   TITLE_REQUIRE = 'Vui lòng điền tiêu đề bài viết',
-  DESCRIPTION_REQUIRE = 'Vui lòng điền mô tả bài viết'
+  DESCRIPTION_REQUIRE = 'Vui lòng điền mô tả bài viết',
+  BOUNTY_INVALID = "Số tiền không hợp lệ",
+  BOUNTY_MIN = "Mức thưởng tối thiểu là 10000VND",
+  TAG_REQUIRE = 'Vui lòng thêm chủ đề cho bài viết',
+  CONFIRMPASSWORD_INVALID = "Mật khẩu xác nhận không trùng khớp"
 }

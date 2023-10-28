@@ -37,6 +37,12 @@ export class AuthController {
           'any.required': ValidationErrorMessages.PASSWORD_REQUIRE,
           'string.empty': ValidationErrorMessages.PASSWORD_REQUIRE,
         }),
+      confirmPassword: Joi.any()
+        .equal(Joi.ref('password'))
+        .required()
+        .messages({
+          'any.only': ValidationErrorMessages.CONFIRMPASSWORD_INVALID,
+        }),
       email: Joi.string()
         .email({
           minDomainSegments: 2,
