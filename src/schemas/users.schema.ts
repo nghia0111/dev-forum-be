@@ -24,6 +24,9 @@ export class User {
   @Prop()
   description: string;
 
+  @Prop({default: 0})
+  balance: number;
+
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }] })
   favorites: Tag[];
 }

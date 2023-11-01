@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { Base } from './base';
+import { TextBase } from './text-base';
 import { Tag } from './tags.schema';
+import { TopicTypes } from 'src/common/constants';
 
 @Schema({ timestamps: true })
-export class Post extends Base{
+export class Post extends TextBase {
   @Prop()
   title: string;
 
@@ -13,6 +14,12 @@ export class Post extends Base{
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }] })
   tags: Tag[];
+
+  @Prop({ type: String, enum: TopicTypes, required: true })
+  topic: string;
+
+  @Prop({ default: false })
+  isAnswered: boolean;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

@@ -1,10 +1,10 @@
 import { Schema, Prop, SchemaFactory, raw } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { CommentParentTypes } from 'src/common/constants';
-import { Base } from './base';
+import { TextBase } from './text-base';
 
 @Schema({ timestamps: true })
-export class Comment extends Base {
+export class Comment extends TextBase {
   @Prop({ type: mongoose.Schema.Types.ObjectId, refPath: 'parent_type' })
   parent;
 
