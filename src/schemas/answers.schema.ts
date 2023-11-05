@@ -14,3 +14,9 @@ export class Answer extends TextBase {
 }
 
 export const AnswerSchema = SchemaFactory.createForClass(Answer);
+
+AnswerSchema.pre('deleteOne', async function (next) {
+  const answerId = this.getQuery()['_id'];
+  await mongoose.model('Vote').deleteMany({parent: answerId});
+  await mongoose.model('Comment').deleteMany({parent: answerId});
+});
