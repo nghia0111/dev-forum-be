@@ -1,19 +1,33 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import {
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { PostDto } from './dto/posts.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post } from 'src/schemas/posts.schema';
 import { Model } from 'mongoose';
 import { Tag } from 'src/schemas/tags.schema';
 import { TopicTypes, ValidationErrorMessages } from 'src/common/constants';
+import { Transaction } from 'src/schemas/transactions.schema';
+import { Answer } from 'src/schemas/answers.schema';
+import { Comment } from 'src/schemas/comments.schema';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectModel(Post.name) private postModel: Model<Post>,
     @InjectModel(Tag.name) private tagModel: Model<Tag>,
+    @InjectModel(Transaction.name) private transactionModel: Model<Transaction>,
+    @InjectModel(Answer.name) private answerModel: Model<Answer>,
+    @InjectModel(Comment.name) private commentModel: Model<Comment>,
   ) {}
-  async create(createPostDto: CreatePostDto, user: Record<string, any>) {
+  async create(createPostDto: PostDto, user: Record<string, any>) {
+    if (createPostDto.bounty && createPostDto.topic !== TopicTypes.BUG)
+      throw new NotAcceptableException(
+        ValidationErrorMessages.BOUNTY_NOT_ACCEPTABLE,
+      );
     const tags = createPostDto.tags;
     for (const tagId in tags) {
       const tag = await this.tagModel.findById(tagId);
@@ -62,14 +76,45 @@ export class PostsService {
   }
 
   async findOne(id: string) {
-    const post = (await this.postModel.findById(id)).populate('tags');
+    return (await this.postModel.findById(id)).populate('tags');
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+  async update(user, id: string, updatePostDto: PostDto) {
+    if (updatePostDto.bounty && updatePostDto.topic !== TopicTypes.BUG)
+      throw new NotAcceptableException(
+        ValidationErrorMessages.BOUNTY_NOT_ACCEPTABLE,
+      );
+    const tags = updatePostDto.tags;
+    console.log(tags)
+    for (let i=0; i < tags.length; i++) {
+      console.log(tags[i])
+      const tag = await this.tagModel.findById(tags[i]);
+      if (!tag)
+        throw new NotFoundException(ValidationErrorMessages.TAG_NOTFOUND);
+    }
+    const post = await this.postModel.findById(id);
+    if (!post)
+      throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
+    if(post.author != user.userId) throw new UnauthorizedException(ValidationErrorMessages.UPDATE_UNAUTHORIZATION)
+    post.title = updatePostDto.title;
+    post.description = updatePostDto.description;
+    post.tags = updatePostDto.tags;
+    post.bounty = updatePostDto.bounty;
+    post.topic = updatePostDto.topic;
+    await post.save();
+    return;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async remove(id: string) {
+    const post = await this.postModel.findById(id);
+    if (!post)
+      throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
+    const existingTransaction = await this.transactionModel.findOne({post: id});
+    if(existingTransaction)
+      throw new NotAcceptableException(ValidationErrorMessages.POST_DELETE_CONFLICT);
+    await this.answerModel.deleteMany({parent: id});
+    await this.commentModel.deleteMany({parent: id});
+    await this.postModel.findByIdAndDelete(id);
+    return;
   }
 }

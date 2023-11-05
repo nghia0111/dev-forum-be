@@ -1,6 +1,7 @@
-export class CreatePostDto {
+export class PostDto {
   title: string;
   description: string;
   bounty? : number;
-  tags: string[]
+  topic: string;
+  tags: any[]
 }

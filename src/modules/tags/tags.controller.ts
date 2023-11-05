@@ -24,11 +24,7 @@ export class TagsController {
       name: Joi.string().required().messages({
         'any.required': ValidationErrorMessages.TAGNAME_REQUIRE,
         'string.empty': ValidationErrorMessages.TAGNAME_REQUIRE,
-      }),
-      image: Joi.object({
-        url: Joi.string().required(),
-        public_id: Joi.string().required(),
-      }),
+      })
     });
 
     const validateResult = schema.validate(createTagDto);
