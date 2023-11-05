@@ -45,7 +45,10 @@ export enum ValidationErrorMessages {
 
   TITLE_REQUIRE = 'Vui lòng điền tiêu đề bài viết',
   DESCRIPTION_REQUIRE = 'Vui lòng điền mô tả bài viết',
+  POST_NOTFOUND = 'Không tìm thấy bài viết',
+  POST_DELETE_CONFLICT = 'Không thể xoá bài viết đã tạo ra giao dịch',
 
   BOUNTY_INVALID = 'Số tiền không hợp lệ',
   BOUNTY_MIN = 'Mức thưởng tối thiểu là 10000VND',
+  BOUNTY_NOT_ACCEPTABLE = 'Tiền thưởng chỉ áp dụng với bài viết sửa lỗi'
 }

@@ -14,6 +14,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { ValidationErrorMessages } from 'src/common/constants';
 import { LoginUserDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -67,13 +68,31 @@ export class AuthService {
     };
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} auth`;
-  // }
+  async changePassword(password: ChangePasswordDto, user: any) {
+    const existingUser = await this.userModel.findById(user.userId);
+    if(!existingUser) throw new NotFoundException(ValidationErrorMessages.USER_NOT_FOUND);
+    const isValid = await bcrypt.compareSync(
+      password.currentPassword,
+      existingUser.password,
+    );
+    if (!isValid) {
+      throw new UnauthorizedException(ValidationErrorMessages.PASSWORD_INVALID);
+    }
+    const hashedPassword = await bcrypt.hash(
+      password.newPassword,
+      Number(process.env.SALT),
+    );
+    existingUser.password = hashedPassword;
+    await existingUser.save();
+  }
 
-  // update(id: number, updateAuthDto: UpdateAuthDto) {
-  //   return `This action updates a #${id} auth`;
-  // }
+  async getMe(user: any) {
+    const existingUser = await this.userModel.findById(user.userId).populate('favorites').lean();
+    if (!existingUser)
+      throw new NotFoundException(ValidationErrorMessages.USER_NOT_FOUND);
+    const { password, ...result } = existingUser;
+    return result;
+  }
 
   // remove(id: number) {
   //   return `This action removes a #${id} auth`;
