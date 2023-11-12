@@ -11,10 +11,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { PostDto } from './dto/posts.dto';
+import { PostDto } from './dto/post.dto';
+import { CommentDto } from '../comments/dto/comment.dto';
 import { PostValidator } from './posts.validator';
 import { Request } from 'express';
 import { Public } from 'src/common/decorators';
+import { CommentValidator } from '../comments/comments.validator';
 
 @Controller('posts')
 export class PostsController {
@@ -35,13 +37,18 @@ export class PostsController {
     return this.postsService.findPosts(params, req.user);
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
   }
 
   @Put(':id')
-  update(@Req() req: Request, @Param('id') id: string, @Body() updatePostDto: PostDto) {
+  update(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() updatePostDto: PostDto,
+  ) {
     const schema = PostValidator;
     const validateResult = schema.validate(updatePostDto);
     if (validateResult.error)
@@ -52,5 +59,18 @@ export class PostsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.postsService.remove(id);
+  }
+
+  @Post(':id/comments')
+  createComment(
+    @Body() createCommentDto: CommentDto,
+    @Req() req: Request,
+    @Param('id') id: string,
+  ) {
+    const schema = CommentValidator;
+    const validateResult = schema.validate(createCommentDto);
+    if (validateResult.error)
+      throw new BadRequestException(validateResult.error.message);
+    this.postsService.createComment(id, createCommentDto, req.user);
   }
 }

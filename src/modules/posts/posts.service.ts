@@ -4,7 +4,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { PostDto } from './dto/posts.dto';
+import { PostDto } from './dto/post.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post } from 'src/schemas/posts.schema';
 import { Model } from 'mongoose';
@@ -13,6 +13,7 @@ import { TopicTypes, ValidationErrorMessages } from 'src/common/constants';
 import { Transaction } from 'src/schemas/transactions.schema';
 import { Answer } from 'src/schemas/answers.schema';
 import { Comment } from 'src/schemas/comments.schema';
+import { CommentDto } from '../comments/dto/comment.dto';
 
 @Injectable()
 export class PostsService {
@@ -29,8 +30,8 @@ export class PostsService {
         ValidationErrorMessages.BOUNTY_NOT_ACCEPTABLE,
       );
     const tags = createPostDto.tags;
-    for (const tagId in tags) {
-      const tag = await this.tagModel.findById(tagId);
+    for (let i = 0; i < tags.length; i++) {
+      const tag = await this.tagModel.findById(tags[i]);
       if (!tag)
         throw new NotFoundException(ValidationErrorMessages.TAG_NOTFOUND);
     }
@@ -76,7 +77,12 @@ export class PostsService {
   }
 
   async findOne(id: string) {
-    return (await this.postModel.findById(id)).populate('tags');
+    const post = await this.postModel.findById(id).populate('tags');
+    if (!post)
+      throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
+    post.views += 1;
+    await post.save();
+    return post;
   }
 
   async update(user, id: string, updatePostDto: PostDto) {
@@ -85,9 +91,8 @@ export class PostsService {
         ValidationErrorMessages.BOUNTY_NOT_ACCEPTABLE,
       );
     const tags = updatePostDto.tags;
-    console.log(tags)
-    for (let i=0; i < tags.length; i++) {
-      console.log(tags[i])
+    console.log(tags);
+    for (let i = 0; i < tags.length; i++) {
       const tag = await this.tagModel.findById(tags[i]);
       if (!tag)
         throw new NotFoundException(ValidationErrorMessages.TAG_NOTFOUND);
@@ -95,7 +100,10 @@ export class PostsService {
     const post = await this.postModel.findById(id);
     if (!post)
       throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
-    if(post.author != user.userId) throw new UnauthorizedException(ValidationErrorMessages.UPDATE_UNAUTHORIZATION)
+    if (post.author != user.userId)
+      throw new UnauthorizedException(
+        ValidationErrorMessages.UPDATE_UNAUTHORIZATION,
+      );
     post.title = updatePostDto.title;
     post.description = updatePostDto.description;
     post.tags = updatePostDto.tags;
@@ -109,12 +117,23 @@ export class PostsService {
     const post = await this.postModel.findById(id);
     if (!post)
       throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
-    const existingTransaction = await this.transactionModel.findOne({post: id});
-    if(existingTransaction)
-      throw new NotAcceptableException(ValidationErrorMessages.POST_DELETE_CONFLICT);
-    await this.answerModel.deleteMany({parent: id});
-    await this.commentModel.deleteMany({parent: id});
+    const existingTransaction = await this.transactionModel.findOne({
+      post: id,
+    });
+    if (existingTransaction)
+      throw new NotAcceptableException(
+        ValidationErrorMessages.POST_DELETE_CONFLICT,
+      );
+    await this.answerModel.deleteMany({ parent: id });
+    await this.commentModel.deleteMany({ parent: id });
     await this.postModel.findByIdAndDelete(id);
+    return;
+  }
+
+  async createComment(postId: string, createCommentDto: CommentDto, user: any) {
+    const post = await this.postModel.findById(postId);
+    if (!post)
+      throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
     return;
   }
 }

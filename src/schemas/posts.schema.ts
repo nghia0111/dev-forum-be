@@ -20,6 +20,9 @@ export class Post extends TextBase {
 
   @Prop({ default: false })
   isAnswered: boolean;
+
+  @Prop({ default: 0})
+  views: number;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
