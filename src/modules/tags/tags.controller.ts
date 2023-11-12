@@ -12,6 +12,7 @@ import * as Joi from 'joi';
 import { ValidationErrorMessages } from 'src/common/constants';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { TagsService } from './tags.service';
+import { Public } from 'src/common/decorators';
 
 @Controller('tags')
 export class TagsController {
@@ -33,9 +34,10 @@ export class TagsController {
     await this.tagsService.create(createTagDto);
   }
 
+  @Public()
   @Get()
   async findAll() {
-    await this.tagsService.findAll();
+    return await this.tagsService.findAll();
   }
 
   @Delete(':id')
