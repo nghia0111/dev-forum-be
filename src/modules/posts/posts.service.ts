@@ -9,11 +9,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Post } from 'src/schemas/posts.schema';
 import { Model } from 'mongoose';
 import { Tag } from 'src/schemas/tags.schema';
-import { TopicTypes, ValidationErrorMessages } from 'src/common/constants';
+import {
+  TopicTypes,
+  ValidationErrorMessages,
+  VoteTypes,
+} from 'src/common/constants';
 import { Transaction } from 'src/schemas/transactions.schema';
-import { Answer } from 'src/schemas/answers.schema';
 import { Comment } from 'src/schemas/comments.schema';
 import { CommentDto } from '../comments/dto/comment.dto';
+import { Vote } from 'src/schemas/votes.schema';
 
 @Injectable()
 export class PostsService {
@@ -21,8 +25,8 @@ export class PostsService {
     @InjectModel(Post.name) private postModel: Model<Post>,
     @InjectModel(Tag.name) private tagModel: Model<Tag>,
     @InjectModel(Transaction.name) private transactionModel: Model<Transaction>,
-    @InjectModel(Answer.name) private answerModel: Model<Answer>,
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
+    @InjectModel(Vote.name) private voteModel: Model<Vote>,
   ) {}
   async create(createPostDto: PostDto, user: Record<string, any>) {
     if (createPostDto.bounty && createPostDto.topic !== TopicTypes.BUG)
@@ -77,12 +81,12 @@ export class PostsService {
   }
 
   async findOne(id: string) {
-    const post = await this.postModel.findById(id).populate('tags');
+    const post = await this.postModel.findById(id);
     if (!post)
       throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
     post.views += 1;
     await post.save();
-    return post;
+    return await this.getPostData(id);
   }
 
   async update(user, id: string, updatePostDto: PostDto) {
@@ -124,16 +128,32 @@ export class PostsService {
       throw new NotAcceptableException(
         ValidationErrorMessages.POST_DELETE_CONFLICT,
       );
-    await this.answerModel.deleteMany({ parent: id });
-    await this.commentModel.deleteMany({ parent: id });
+    await this.commentModel.deleteMany({ post: id });
     await this.postModel.findByIdAndDelete(id);
     return;
   }
 
-  async createComment(postId: string, createCommentDto: CommentDto, user: any) {
-    const post = await this.postModel.findById(postId);
-    if (!post)
-      throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
-    return;
+  async getPostData(postId: string) {
+    const post = await this.postModel
+      .findById(postId)
+      .populate('tags')
+      .populate('author', 'displayName avatar');
+    const comments = await this.commentModel
+      .find({ post: postId })
+      .sort('score')
+      .select('description author')
+      .populate('author', 'displayName avatar').lean();
+    const postAnswers = [];
+    for (let i = 0; i < comments.length; i++) {
+      const replies = await this.commentModel
+        .find({ parent: comments[i]._id })
+        .sort('createdAt')
+        .select('description author')
+        .populate('author', 'displayName avatar');
+      
+      const newComment = { ...comments[i], replies: replies };
+      postAnswers.push(newComment);
+    }
+    return { post: post, comments: postAnswers };
   }
 }

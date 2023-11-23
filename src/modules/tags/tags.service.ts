@@ -1,18 +1,25 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { CreateTagDto } from './dto/create-tag.dto';
-import { UpdateTagDto } from './dto/update-tag.dto';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { TagDto } from './dto/tag.dto';
 import { Tag } from 'src/schemas/tags.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ValidationErrorMessages } from 'src/common/constants';
+import { Post } from 'src/schemas/posts.schema';
 
 @Injectable()
 export class TagsService {
-  constructor(@InjectModel(Tag.name) private tagModel: Model<Tag>) {}
-  async create(createTagDto: CreateTagDto) {
+  constructor(
+    @InjectModel(Tag.name) private tagModel: Model<Tag>,
+    @InjectModel(Post.name) private postModel: Model<Post>,
+  ) {}
+  async create(createTagDto: TagDto) {
     const { name } = createTagDto;
     const existingTag = await this.tagModel.findOne({
-      name
+      name,
     });
     if (existingTag) {
       throw new ConflictException(ValidationErrorMessages.TAGNAME_CONFLICT);
@@ -24,19 +31,33 @@ export class TagsService {
     return await this.tagModel.find();
   }
 
-  async update(id: string, updateTagDto: UpdateTagDto) {
+  async update(id: string, updateTagDto: TagDto) {
     const { name } = updateTagDto;
-    const existingTag = await this.tagModel.findOne({
+    const existingTag = await this.tagModel.findById(id);
+    if (!existingTag) {
+      throw new NotFoundException(ValidationErrorMessages.TAG_NOTFOUND);
+    }
+    const conflictTag = await this.tagModel.findOne({
       name,
-      _id: {$ne: id}
+      _id: { $ne: id },
     });
-    if (existingTag) {
+    if (conflictTag) {
       throw new ConflictException(ValidationErrorMessages.TAGNAME_CONFLICT);
     }
     await this.tagModel.findByIdAndUpdate(id, { name });
   }
 
   async remove(id: string) {
+    const existingTag = await this.tagModel.findById(id);
+    if (!existingTag) {
+      throw new NotFoundException(ValidationErrorMessages.TAG_NOTFOUND);
+    }
+    const allPosts = await this.postModel.find();
+    const posts = allPosts.filter((post) => post.tags.includes(id));
+    for (let i = 0; i < posts.length; i++) {
+      posts[i].tags.pull(id);
+      await posts[i].save();
+    }
     await this.tagModel.findByIdAndRemove(id);
   }
 }

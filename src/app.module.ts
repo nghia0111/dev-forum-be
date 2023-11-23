@@ -1,13 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-// import { UsersModule } from './modules/users/users.module';
-// import { PostsModule } from './modules/posts/posts.module';
-// import { CommentsModule } from './modules/comments/comments.module';
-// import { TagsModule } from './modules/tags/tags.module';
-// import { VotesModule } from './modules/votes/votes.module';
-// import { TransactionsModule } from './modules/transactions/transactions.module';
-// import { RatingsModule } from './modules/ratings/ratings.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -16,10 +9,12 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { UploadModule } from './modules/upload/upload.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { TagsModule } from './modules/tags/tags.module';
+import { CommentGateway } from './modules/comments/comments.gateway';
+import { Post, PostSchema } from './schemas/posts.schema';
+import { Comment, CommentSchema } from './schemas/comments.schema';
 
 @Module({
   imports: [
-    // CommentsModule,
     // UsersModule,
     // PostsModule,
     // TagsModule,
@@ -34,10 +29,15 @@ import { TagsModule } from './modules/tags/tags.module';
     MongooseModule.forRoot(
       `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.ff8zaru.mongodb.net/${process.env.MONGO_DATABASE}?retryWrites=true&w=majority`,
     ),
+    MongooseModule.forFeature([
+      { name: Post.name, schema: PostSchema },
+      { name: Comment.name, schema: CommentSchema },
+    ]),
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    CommentGateway,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

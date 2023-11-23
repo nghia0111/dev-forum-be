@@ -60,17 +60,4 @@ export class PostsController {
   remove(@Param('id') id: string) {
     return this.postsService.remove(id);
   }
-
-  @Post(':id/comments')
-  createComment(
-    @Body() createCommentDto: CommentDto,
-    @Req() req: Request,
-    @Param('id') id: string,
-  ) {
-    const schema = CommentValidator;
-    const validateResult = schema.validate(createCommentDto);
-    if (validateResult.error)
-      throw new BadRequestException(validateResult.error.message);
-    this.postsService.createComment(id, createCommentDto, req.user);
-  }
 }

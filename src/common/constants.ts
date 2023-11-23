@@ -1,10 +1,4 @@
-export enum CommentParentTypes {
-  ANSWER = 'Answer',
-  POST = 'Post',
-}
-
 export enum VoteParentTypes {
-  ANSWER = 'Answer',
   POST = 'Post',
   COMMENT = 'Comment',
 }

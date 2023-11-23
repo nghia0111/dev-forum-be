@@ -4,13 +4,13 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
+  Put,
   Param,
-  Post
+  Post,
 } from '@nestjs/common';
 import * as Joi from 'joi';
 import { ValidationErrorMessages } from 'src/common/constants';
-import { CreateTagDto } from './dto/create-tag.dto';
+import { TagDto } from './dto/tag.dto';
 import { TagsService } from './tags.service';
 import { Public } from 'src/common/decorators';
 
@@ -18,20 +18,34 @@ import { Public } from 'src/common/decorators';
 export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
-  @HttpCode(201)
   @Post()
-  async create(@Body() createTagDto: CreateTagDto) {
+  async create(@Body() createTagDto: TagDto) {
     const schema = Joi.object({
       name: Joi.string().required().messages({
         'any.required': ValidationErrorMessages.TAGNAME_REQUIRE,
         'string.empty': ValidationErrorMessages.TAGNAME_REQUIRE,
-      })
+      }),
     });
 
     const validateResult = schema.validate(createTagDto);
     if (validateResult.error)
       throw new BadRequestException(validateResult.error.message);
     await this.tagsService.create(createTagDto);
+  }
+
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() updateTagDto: TagDto) {
+    const schema = Joi.object({
+      name: Joi.string().required().messages({
+        'any.required': ValidationErrorMessages.TAGNAME_REQUIRE,
+        'string.empty': ValidationErrorMessages.TAGNAME_REQUIRE,
+      }),
+    });
+
+    const validateResult = schema.validate(updateTagDto);
+    if (validateResult.error)
+      throw new BadRequestException(validateResult.error.message);
+    await this.tagsService.update(id, updateTagDto);
   }
 
   @Public()
