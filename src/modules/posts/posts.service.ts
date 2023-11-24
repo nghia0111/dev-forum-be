@@ -45,7 +45,7 @@ export class PostsService {
 
   async findPosts(params: any, user: Record<string, any>) {
     const { isMyPosts, filter, isBountied, sort, topic, search } = params;
-    let posts = await this.postModel.find().populate('tags');
+    let posts = await this.postModel.find().populate('tags').populate('author', 'avatar displayName');
     if (isMyPosts === 'true') {
       posts = posts.filter((post) => post.author == user.userId);
     }
