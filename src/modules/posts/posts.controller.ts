@@ -37,10 +37,10 @@ export class PostsController {
   }
 
   @Public()
-  @Get(':id')
-  findOne(@Param('id') id: string, @Req() req: Request) {
+  @Get(':slug')
+  findOne(@Param('slug') slug: string, @Req() req: Request) {
     const auth = req.get('Authorization');
-    return this.postsService.findOne(id, auth);
+    return this.postsService.findOne(slug, auth);
   }
 
   @Put(':id')

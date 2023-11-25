@@ -125,8 +125,8 @@ export class PostsService {
     return newPosts;
   }
 
-  async findOne(id: string, auth?: string) {
-    const post = await this.postModel.findById(id);
+  async findOne(slug: string, auth?: string) {
+    const post = await this.postModel.findOne({slug: slug});
     if (!post)
       throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
     post.views += 1;
@@ -147,7 +147,7 @@ export class PostsService {
         throw new UnauthorizedException();
       }
     }
-    return await this.getPostData(id, userId);
+    return await this.getPostData(post._id, userId);
   }
 
   async update(user, id: string, updatePostDto: PostDto) {
