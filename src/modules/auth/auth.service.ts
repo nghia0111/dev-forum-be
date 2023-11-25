@@ -5,8 +5,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
-// import { CreateAuthDto } from './dto/create-auth.dto';
-// import { UpdateAuthDto } from './dto/update-auth.dto';
 import { SignUpUserDto } from './dto/signup-user.dto';
 import { User } from 'src/schemas/users.schema';
 import * as bcrypt from 'bcrypt';

@@ -1,10 +1,9 @@
-import { Schema, Prop, SchemaFactory, raw } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { TextBase } from './text-base';
 import { Post } from './posts.schema';
-import { VoteTypes } from 'src/common/constants';
+import { TextBase } from './text-base';
 
-@Schema({ timestamps: true, toJSON: {virtuals: true} })
+@Schema({ timestamps: true, toJSON: { virtuals: true } })
 export class Comment extends TextBase {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' })
   parent;
@@ -14,20 +13,12 @@ export class Comment extends TextBase {
 
   @Prop({ default: false })
   is_accepted: boolean;
+
+  @Prop({ default: 0 })
+  score: number;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
-
-CommentSchema.virtual('score').get(async function () {
-  return (
-    (await mongoose
-      .model('Vote')
-      .countDocuments({ parent: this._id, vote_type: VoteTypes.UP_VOTE })) -
-    (await mongoose
-      .model('Vote')
-      .countDocuments({ parent: this._id, vote_type: VoteTypes.DOWN_VOTE }))
-  );
-});
 
 CommentSchema.pre('deleteOne', async function (next) {
   const commentId = this.getQuery()['_id'];

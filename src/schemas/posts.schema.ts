@@ -1,10 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
+import { TopicTypes } from 'src/common/constants';
 import { TextBase } from './text-base';
-import { Tag } from './tags.schema';
-import { TopicTypes, VoteTypes } from 'src/common/constants';
 
-@Schema({ timestamps: true, toJSON: {virtuals: true} })
+@Schema({ timestamps: true })
 export class Post extends TextBase {
   @Prop()
   title: string;
@@ -21,19 +20,16 @@ export class Post extends TextBase {
   @Prop({ default: false })
   isAnswered: boolean;
 
-  @Prop({ default: 0})
+  @Prop({ default: 0 })
   views: number;
+
+  @Prop({ default: 0 })
+  score: number;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
 
-PostSchema.virtual('score').get(async function () {
-  return (
-    (await mongoose
-      .model('Vote')
-      .countDocuments({ parent: this._id, vote_type: VoteTypes.UP_VOTE })) -
-    (await mongoose
-      .model('Vote')
-      .countDocuments({ parent: this._id, vote_type: VoteTypes.DOWN_VOTE }))
-  );
+PostSchema.pre('deleteOne', async function (next) {
+  const postId = this.getQuery()['_id'];
+  await mongoose.model('Vote').deleteMany({ parent: postId });
 });

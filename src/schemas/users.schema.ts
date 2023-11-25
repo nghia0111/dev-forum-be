@@ -1,6 +1,5 @@
-import { Schema, Prop, SchemaFactory, raw } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { Tag } from './tags.schema';
 
 @Schema()
 export class User {
@@ -24,11 +23,14 @@ export class User {
   @Prop()
   description: string;
 
-  @Prop({default: 0})
+  @Prop({ default: 0 })
   balance: number;
 
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }] })
+  savedPosts;
+
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }] })
-  favorites: Tag[];
+  favorites;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

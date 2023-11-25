@@ -1,22 +1,20 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Put,
-  Param,
-  Delete,
   BadRequestException,
-  Req,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
   Query,
+  Req,
 } from '@nestjs/common';
-import { PostsService } from './posts.service';
-import { PostDto } from './dto/post.dto';
-import { CommentDto } from '../comments/dto/comment.dto';
-import { PostValidator } from './posts.validator';
 import { Request } from 'express';
 import { Public } from 'src/common/decorators';
-import { CommentValidator } from '../comments/comments.validator';
+import { PostDto } from './dto/post.dto';
+import { PostsService } from './posts.service';
+import { PostValidator } from './posts.validator';
 
 @Controller('posts')
 export class PostsController {
@@ -34,13 +32,15 @@ export class PostsController {
   @Public()
   @Get()
   findPosts(@Query() params: any, @Req() req: Request) {
-    return this.postsService.findPosts(params, req.user);
+    const auth = req.get('Authorization');
+    return this.postsService.findPosts(params, auth);
   }
 
   @Public()
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postsService.findOne(id);
+  findOne(@Param('id') id: string, @Req() req: Request) {
+    const auth = req.get('Authorization');
+    return this.postsService.findOne(id, auth);
   }
 
   @Put(':id')

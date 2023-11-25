@@ -1,37 +1,3 @@
-// import { Controller, Post, Body, Put, Param, Delete, Req, BadRequestException } from '@nestjs/common';
-// import { CommentsService } from './comments.service';
-// import { CommentDto } from './dto/comment.dto';
-// import { CommentValidator } from './comments.validator';
-// import { Request } from 'express';
-
-// @Controller('comments')
-// export class CommentsController {
-//   constructor(private readonly commentsService: CommentsService) {}
-
-//   @Post(':postId')
-//   create(
-//     @Param('postId') postId: string,
-//     @Body() createCommentDto: CommentDto,
-//     @Req() req: Request,
-//   ) {
-//     const schema = CommentValidator;
-//     const validateResult = schema.validate(createCommentDto);
-//     if (validateResult.error)
-//       throw new BadRequestException(validateResult.error.message);
-//     this.commentsService.createComment(postId, createCommentDto, req.user);
-//     return;
-//   }
-
-//   @Put(':id')
-//   update(@Param('id') id: string, @Body() updateCommentDto: CommentDto) {
-//     return this.commentsService.update(id, updateCommentDto);
-//   }
-
-//   @Delete(':id')
-//   remove(@Param('id') id: string) {
-//     return this.commentsService.remove(id);
-//   }
-// }
 
 import {
   WebSocketGateway,

@@ -12,15 +12,17 @@ import { TagsModule } from './modules/tags/tags.module';
 import { CommentGateway } from './modules/comments/comments.gateway';
 import { Post, PostSchema } from './schemas/posts.schema';
 import { Comment, CommentSchema } from './schemas/comments.schema';
+import { VotesModule } from './modules/votes/votes.module';
 
 @Module({
   imports: [
     // UsersModule,
     // PostsModule,
     // TagsModule,
-    // VotesModule,
+
     // TransactionsModule,
     // RatingsModule,
+    VotesModule,
     AuthModule,
     UploadModule,
     PostsModule,
