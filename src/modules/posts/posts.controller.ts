@@ -26,7 +26,7 @@ export class PostsController {
     const validateResult = schema.validate(createPostDto);
     if (validateResult.error)
       throw new BadRequestException(validateResult.error.message);
-    this.postsService.create(createPostDto, req.user);
+    return this.postsService.create(createPostDto, req.user);
   }
 
   @Public()

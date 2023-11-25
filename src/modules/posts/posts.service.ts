@@ -4,6 +4,8 @@ import {
   NotAcceptableException,
   NotFoundException,
   UnauthorizedException,
+  HttpException,
+  HttpStatus,
   forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -126,7 +128,7 @@ export class PostsService {
   }
 
   async findOne(slug: string, auth?: string) {
-    const post = await this.postModel.findOne({slug: slug});
+    const post = await this.postModel.findOne({ slug: slug });
     if (!post)
       throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
     post.views += 1;
