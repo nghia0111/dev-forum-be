@@ -194,56 +194,77 @@ export class PostsService {
   }
 
   async getPostData(postId: string, userId?: string) {
-    console.log(Date.now())
-    const post = await this.postModel
-      .findById(postId)
-      .populate('tags', 'name')
-      .populate('author', 'displayName avatar').lean();
-    
+    // Use Promise.all to parallelize population and vote retrieval
+    const [post, comments] = await Promise.all([
+      this.postModel
+        .findById(postId)
+        .populate('tags', 'name')
+        .populate('author', 'displayName avatar')
+        .lean(),
+      this.commentModel
+        .find({ post: postId })
+        .sort('score')
+        .select('description author score is_accepted')
+        .populate('author', 'displayName avatar')
+        .lean(),
+    ]);
+
+    // Use Promise.all for parallelizing vote retrieval for post and comments
+    const [postVote] = await Promise.all([
+      this.getVoteType(post._id, VoteParentTypes.POST, userId),
+      // Parallelize vote retrieval for comments
+      Promise.all(
+        comments.map(async (comment) => ({
+          ...comment,
+          vote: await this.getVoteType(
+            comment._id,
+            VoteParentTypes.COMMENT,
+            userId,
+          ),
+        })),
+      ),
+    ]);
+
+    // Combine the results
     const newPost = {
       ...post,
-      vote: await this.getVoteType(post._id, VoteParentTypes.POST, userId),
+      vote: postVote,
     };
-    console.log(Date.now());
-    const comments = await this.commentModel
-      .find({ post: postId })
-      .sort('score')
-      .select('description author score is_accepted')
-      .populate('author', 'displayName avatar')
-      .lean();
-    const postAnswers = [];
-    for (let i = 0; i < comments.length; i++) {
-      const _replies = await this.commentModel
-        .find({ parent: comments[i]._id })
-        .sort('createdAt')
-        .select('description author')
-        .populate('author', 'displayName avatar')
-        .lean();
-      const replies = await Promise.all(
-        _replies.map(async (reply) => {
-          return {
+
+    const postAnswers = await Promise.all(
+      comments.map(async (comment) => {
+        // Parallelize the retrieval of replies and their votes
+        const _replies = await this.commentModel
+          .find({ parent: comment._id })
+          .sort('createdAt')
+          .select('description author')
+          .populate('author', 'displayName avatar')
+          .lean();
+
+        const replies = await Promise.all(
+          _replies.map(async (reply) => ({
             ...reply,
             vote: await this.getVoteType(
               reply._id,
               VoteParentTypes.COMMENT,
               userId,
             ),
-          };
-        }),
-      );
+          })),
+        );
 
-      const newComment = {
-        ...comments[i],
-        vote: await this.getVoteType(
-          comments[i]._id,
-          VoteParentTypes.COMMENT,
-          userId,
-        ),
-        replies: replies,
-      };
-      postAnswers.push(newComment);
-    }
-   return { post: newPost, comments: postAnswers };
+        return {
+          ...comment,
+          vote: await this.getVoteType(
+            comment._id,
+            VoteParentTypes.COMMENT,
+            userId,
+          ),
+          replies: replies,
+        };
+      }),
+    );
+
+    return { post: newPost, comments: postAnswers };
   }
 
   async getVoteType(
@@ -252,11 +273,11 @@ export class PostsService {
     userId?: string,
   ) {
     const vote = await this.voteModel.findOne({
-        parent: parentId,
-        parent_type: parent_type,
-        user: userId,
-      })
-     if(vote) return vote.vote_type;
-     return 0;
+      parent: parentId,
+      parent_type: parent_type,
+      user: userId,
+    });
+    if (vote) return vote.vote_type;
+    return 0;
   }
 }
