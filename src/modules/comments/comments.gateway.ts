@@ -1,4 +1,3 @@
-
 import {
   WebSocketGateway,
   WebSocketServer,
@@ -13,9 +12,14 @@ import * as jwt from 'jsonwebtoken';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post } from 'src/schemas/posts.schema';
 import { Model } from 'mongoose';
-import { UnauthorizedException, NotFoundException } from '@nestjs/common';
+import {
+  UnauthorizedException,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { ValidationErrorMessages } from 'src/common/constants';
 import { Comment } from 'src/schemas/comments.schema';
+import { CommentValidator } from './comments.validator';
 
 @WebSocketGateway()
 export class CommentGateway
@@ -54,19 +58,65 @@ export class CommentGateway
   @SubscribeMessage('commentOnPost')
   async handleCommentOnPost(
     socket: Socket,
-    data: { postId: string; description: string },
+    data: { postId: string; parent?: string; description: string },
   ) {
     const post = await this.postModel.findById(data.postId);
     if (!post)
       throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
+    if (parent) {
+      const comment = await this.commentModel.findById(data.parent);
+      if (!comment)
+        throw new NotFoundException(ValidationErrorMessages.COMMENT_NOT_FOUND);
+    }
+    const schema = CommentValidator;
+    const validateResult = schema.validate({ description: data.description });
+    if (validateResult.error)
+      throw new BadRequestException(validateResult.error.message);
     await this.commentModel.create({
       description: data.description,
       author: socket.data.userId,
-      parent: null,
+      parent: data.parent,
       post: data.postId,
     });
 
     const postData = await this.postService.getPostData(data.postId);
+    this.server.emit('updatePost', postData);
+  }
+
+  @SubscribeMessage('updateComment')
+  async handleUpdateComment(
+    socket: Socket,
+    data: { commentId: string; description: string },
+  ) {
+    const comment = await this.commentModel.findById(data.commentId);
+    if (!comment)
+      throw new NotFoundException(ValidationErrorMessages.COMMENT_NOT_FOUND);
+    if (comment.author != socket.data.userId) throw new UnauthorizedException();
+    const schema = CommentValidator;
+    const validateResult = schema.validate({ description: data.description });
+    if (validateResult.error)
+      throw new BadRequestException(validateResult.error.message);
+    comment.description = data.description;
+    await comment.save();
+
+    const postData = await this.postService.getPostData(
+      comment.post.toString(),
+    );
+    this.server.emit('updatePost', postData);
+  }
+
+  @SubscribeMessage('deleteComment')
+  async handleDeleteComment(socket: Socket, data: { commentId: string }) {
+    const comment = await this.commentModel.findById(data.commentId);
+    if (!comment)
+      throw new NotFoundException(ValidationErrorMessages.COMMENT_NOT_FOUND);
+    if (comment.author != socket.data.userId) throw new UnauthorizedException();
+    await this.commentModel.deleteMany({ parent: comment._id });
+    await this.commentModel.findByIdAndDelete(data.commentId);
+
+    const postData = await this.postService.getPostData(
+      comment.post.toString(),
+    );
     this.server.emit('updatePost', postData);
   }
 }

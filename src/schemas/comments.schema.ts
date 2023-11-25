@@ -9,7 +9,7 @@ export class Comment extends TextBase {
   parent;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Post' })
-  post: Post;
+  post;
 
   @Prop({ default: false })
   is_accepted: boolean;
