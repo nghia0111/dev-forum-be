@@ -3,6 +3,11 @@ export enum VoteParentTypes {
   COMMENT = 'Comment',
 }
 
+export enum UserRole {
+  ADMIN = 'Admin',
+  USER = 'User',
+}
+
 export enum TopicTypes {
   DISCUSS = 'discuss',
   NEWS = 'news',

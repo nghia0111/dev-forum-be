@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
+import { UserRole } from 'src/common/constants';
 
 @Schema()
 export class User {
@@ -31,6 +32,9 @@ export class User {
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }] })
   favorites;
+
+  @Prop({ type: String, enum: UserRole, default: UserRole.USER})
+  role;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
