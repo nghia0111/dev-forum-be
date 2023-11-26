@@ -74,7 +74,7 @@ export class CommentGateway
     const post = await this.postModel.findById(data.postId);
     if (!post)
       throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
-    if (parent) {
+    if (data.parent) {
       const comment = await this.commentModel.findById(data.parent);
       if (!comment)
         throw new NotFoundException(ValidationErrorMessages.COMMENT_NOT_FOUND);
