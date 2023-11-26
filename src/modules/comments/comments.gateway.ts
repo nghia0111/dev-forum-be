@@ -21,7 +21,7 @@ import { ValidationErrorMessages } from 'src/common/constants';
 import { Comment } from 'src/schemas/comments.schema';
 import { CommentValidator } from './comments.validator';
 
-@WebSocketGateway()
+@WebSocketGateway({ cors: true })
 export class CommentGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
@@ -36,9 +36,8 @@ export class CommentGateway
 
   async handleConnection(socket: Socket) {
     console.log(`Client connected: ${socket.id}`);
-    const token = socket.handshake.headers.authorization;
     try {
-      //   const token = (authHeader as string).split(' ')[1];
+      const token = socket.handshake.headers.authorization.split(' ')[1];
       if (token) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         if (!decoded) throw new UnauthorizedException();
@@ -53,6 +52,18 @@ export class CommentGateway
 
   handleDisconnect(@ConnectedSocket() socket: Socket) {
     console.log(`Client disconnected: ${socket.id}`);
+  }
+
+  @SubscribeMessage('joinPostRoom')
+  async handleJoinPostRoom(socket: Socket, data: { postId: string }) {
+    const post = await this.postModel.findById(data.postId);
+
+    if (!post) {
+      throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
+    }
+
+    // Join the room based on the postId
+    socket.join(data.postId);
   }
 
   @SubscribeMessage('commentOnPost')
@@ -80,7 +91,7 @@ export class CommentGateway
     });
 
     const postData = await this.postService.getPostData(data.postId);
-    this.server.emit('updatePost', postData);
+    this.server.to(data.postId).emit('updatePost', postData);
   }
 
   @SubscribeMessage('updateComment')
@@ -102,12 +113,13 @@ export class CommentGateway
     const postData = await this.postService.getPostData(
       comment.post.toString(),
     );
-    this.server.emit('updatePost', postData);
+    this.server.to(comment.post.toString()).emit('updatePost', postData);
   }
 
   @SubscribeMessage('deleteComment')
   async handleDeleteComment(socket: Socket, data: { commentId: string }) {
     const comment = await this.commentModel.findById(data.commentId);
+    const postId = comment.post.toString();
     if (!comment)
       throw new NotFoundException(ValidationErrorMessages.COMMENT_NOT_FOUND);
     if (comment.author != socket.data.userId) throw new UnauthorizedException();
@@ -117,6 +129,6 @@ export class CommentGateway
     const postData = await this.postService.getPostData(
       comment.post.toString(),
     );
-    this.server.emit('updatePost', postData);
+    this.server.to(postId).emit('updatePost', postData);
   }
 }
