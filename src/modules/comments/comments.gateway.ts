@@ -3,6 +3,7 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  WsException,
   SubscribeMessage,
   ConnectedSocket,
 } from '@nestjs/websockets';
@@ -40,7 +41,7 @@ export class CommentGateway
       const token = socket.handshake.headers.authorization.split(' ')[1];
       if (token) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        if (!decoded) throw new UnauthorizedException();
+        if (!decoded) socket.data.userId = undefined;
         socket.data.userId = decoded.sub;
       } else {
         socket.data.userId = undefined;
@@ -58,10 +59,11 @@ export class CommentGateway
   async handleJoinPostRoom(socket: Socket, data: { postId: string }) {
     const post = await this.postModel.findById(data.postId);
     if (!post) {
-      throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
+      throw new WsException(ValidationErrorMessages.POST_NOTFOUND);
     }
     // Join the room based on the postId
     socket.join(data.postId);
+    console.log(socket)
   }
 
   @SubscribeMessage('commentOnPost')
@@ -69,19 +71,19 @@ export class CommentGateway
     socket: Socket,
     data: { postId: string; parent?: string; description: string },
   ) {
-    if(!socket.data.userId) throw new UnauthorizedException()
+    if(!socket.data.userId) throw new WsException(ValidationErrorMessages.UNAUTHENTICATED)
     const post = await this.postModel.findById(data.postId);
     if (!post)
-      throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
+      throw new WsException(ValidationErrorMessages.POST_NOTFOUND);
     if (data.parent) {
       const comment = await this.commentModel.findById(data.parent);
       if (!comment)
-        throw new NotFoundException(ValidationErrorMessages.COMMENT_NOT_FOUND);
+        throw new WsException(ValidationErrorMessages.COMMENT_NOT_FOUND);
     }
     const schema = CommentValidator;
     const validateResult = schema.validate({ description: data.description });
     if (validateResult.error)
-      throw new BadRequestException(validateResult.error.message);
+      throw new WsException(validateResult.error.message);
     await this.commentModel.create({
       description: data.description,
       author: socket.data.userId,
@@ -98,15 +100,15 @@ export class CommentGateway
     socket: Socket,
     data: { commentId: string; description: string },
   ) {
-    if (!socket.data.userId) throw new UnauthorizedException();
+    if (!socket.data.userId) throw new WsException(ValidationErrorMessages.UNAUTHORIZED);
     const comment = await this.commentModel.findById(data.commentId);
     if (!comment)
-      throw new NotFoundException(ValidationErrorMessages.COMMENT_NOT_FOUND);
-    if (comment.author != socket.data.userId) throw new UnauthorizedException();
+      throw new WsException(ValidationErrorMessages.COMMENT_NOT_FOUND);
+    if (comment.author != socket.data.userId) throw new WsException(ValidationErrorMessages.UNAUTHORIZED);
     const schema = CommentValidator;
     const validateResult = schema.validate({ description: data.description });
     if (validateResult.error)
-      throw new BadRequestException(validateResult.error.message);
+      throw new WsException(validateResult.error.message);
     comment.description = data.description;
     await comment.save();
 
@@ -118,12 +120,12 @@ export class CommentGateway
 
   @SubscribeMessage('deleteComment')
   async handleDeleteComment(socket: Socket, data: { commentId: string }) {
-    if (!socket.data.userId) throw new UnauthorizedException();
+    if (!socket.data.userId) throw new WsException(ValidationErrorMessages.UNAUTHORIZED);
     const comment = await this.commentModel.findById(data.commentId);
     const postId = comment.post.toString();
     if (!comment)
-      throw new NotFoundException(ValidationErrorMessages.COMMENT_NOT_FOUND);
-    if (comment.author != socket.data.userId) throw new UnauthorizedException();
+      throw new WsException(ValidationErrorMessages.COMMENT_NOT_FOUND);
+    if (comment.author != socket.data.userId) throw new WsException(ValidationErrorMessages.UNAUTHORIZED);
     await this.commentModel.deleteMany({ parent: comment._id });
     await this.commentModel.findByIdAndDelete(data.commentId);
 

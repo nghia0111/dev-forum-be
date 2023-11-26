@@ -54,4 +54,7 @@ export enum ValidationErrorMessages {
 
   COMMENT_NOT_EMPTY = 'Bình luận không được để trống',
   COMMENT_NOT_FOUND = 'Không tìm thấy bình luận',
+
+  UNAUTHENTICATED = 'Vui lòng đăng nhập để sử dụng tính năng',
+  UNAUTHORIZED = 'Chỉ có tác giả mới có thể thực hiện thao tác'
 }
