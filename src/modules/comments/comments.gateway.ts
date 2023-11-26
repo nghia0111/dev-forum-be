@@ -43,10 +43,10 @@ export class CommentGateway
         if (!decoded) throw new UnauthorizedException();
         socket.data.userId = decoded.sub;
       } else {
-        socket.disconnect();
+        socket.data.userId = undefined;
       }
     } catch (err) {
-      socket.disconnect();
+      socket.data.userId = undefined;;
     }
   }
 
@@ -57,11 +57,9 @@ export class CommentGateway
   @SubscribeMessage('joinPostRoom')
   async handleJoinPostRoom(socket: Socket, data: { postId: string }) {
     const post = await this.postModel.findById(data.postId);
-
     if (!post) {
       throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
     }
-
     // Join the room based on the postId
     socket.join(data.postId);
   }
@@ -71,6 +69,7 @@ export class CommentGateway
     socket: Socket,
     data: { postId: string; parent?: string; description: string },
   ) {
+    if(!socket.data.userId) throw new UnauthorizedException()
     const post = await this.postModel.findById(data.postId);
     if (!post)
       throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
@@ -99,6 +98,7 @@ export class CommentGateway
     socket: Socket,
     data: { commentId: string; description: string },
   ) {
+    if (!socket.data.userId) throw new UnauthorizedException();
     const comment = await this.commentModel.findById(data.commentId);
     if (!comment)
       throw new NotFoundException(ValidationErrorMessages.COMMENT_NOT_FOUND);
@@ -118,6 +118,7 @@ export class CommentGateway
 
   @SubscribeMessage('deleteComment')
   async handleDeleteComment(socket: Socket, data: { commentId: string }) {
+    if (!socket.data.userId) throw new UnauthorizedException();
     const comment = await this.commentModel.findById(data.commentId);
     const postId = comment.post.toString();
     if (!comment)
