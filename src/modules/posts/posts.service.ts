@@ -82,7 +82,12 @@ export class PostsService {
           return newPost;
         }),
       );
-      posts = posts.filter((post) => post.author == decoded.sub);
+      posts = posts.filter((post) => {
+        return (
+          (post.author as unknown as { _id: string })._id.toString() ==
+          decoded.sub
+        );
+      });
     }
     if (filter === 'answered') {
       posts = posts.filter((post) => post.isAnswered);
