@@ -41,6 +41,9 @@ export const ChangePasswordValidator = Joi.object({
       'any.required': ValidationErrorMessages.PASSWORD_REQUIRE,
       'string.empty': ValidationErrorMessages.PASSWORD_REQUIRE,
     }),
+  confirmNewPassword: Joi.any().equal(Joi.ref('newPassword')).required().messages({
+    'any.only': ValidationErrorMessages.CONFIRMPASSWORD_INVALID,
+  }),
 });
 
 export const UpdateProfileValidator = Joi.object({
