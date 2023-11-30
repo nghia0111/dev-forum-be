@@ -9,7 +9,6 @@ import {
 } from 'src/schemas/transactions.schema';
 import { User, UserSchema } from 'src/schemas/users.schema';
 import { Vote, VoteSchema } from 'src/schemas/votes.schema';
-import { VotesModule } from '../votes/votes.module';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 

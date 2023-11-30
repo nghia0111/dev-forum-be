@@ -35,7 +35,7 @@ export class TagsService {
     const { name } = updateTagDto;
     const existingTag = await this.tagModel.findById(id);
     if (!existingTag) {
-      throw new NotFoundException(ValidationErrorMessages.TAG_NOTFOUND);
+      throw new NotFoundException(ValidationErrorMessages.TAG_NOT_FOUND);
     }
     const conflictTag = await this.tagModel.findOne({
       name,
@@ -50,7 +50,7 @@ export class TagsService {
   async remove(id: string) {
     const existingTag = await this.tagModel.findById(id);
     if (!existingTag) {
-      throw new NotFoundException(ValidationErrorMessages.TAG_NOTFOUND);
+      throw new NotFoundException(ValidationErrorMessages.TAG_NOT_FOUND);
     }
     const allPosts = await this.postModel.find();
     const posts = allPosts.filter((post) => post.tags.includes(id));

@@ -13,11 +13,6 @@ import * as jwt from 'jsonwebtoken';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post } from 'src/schemas/posts.schema';
 import { Model } from 'mongoose';
-import {
-  UnauthorizedException,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
 import { ValidationErrorMessages } from 'src/common/constants';
 import { Comment } from 'src/schemas/comments.schema';
 import { CommentValidator } from './comments.validator';
@@ -59,11 +54,10 @@ export class CommentGateway
   async handleJoinPostRoom(socket: Socket, data: { postId: string }) {
     const post = await this.postModel.findById(data.postId);
     if (!post) {
-      throw new WsException(ValidationErrorMessages.POST_NOTFOUND);
+      throw new WsException(ValidationErrorMessages.POST_NOT_FOUND);
     }
     // Join the room based on the postId
     socket.join(data.postId);
-    console.log(socket)
   }
 
   @SubscribeMessage('commentOnPost')
@@ -74,7 +68,7 @@ export class CommentGateway
     if(!socket.data.userId) throw new WsException(ValidationErrorMessages.UNAUTHENTICATED)
     const post = await this.postModel.findById(data.postId);
     if (!post)
-      throw new WsException(ValidationErrorMessages.POST_NOTFOUND);
+      throw new WsException(ValidationErrorMessages.POST_NOT_FOUND);
     if (data.parent) {
       const comment = await this.commentModel.findById(data.parent);
       if (!comment)

@@ -23,7 +23,6 @@ import { Tag } from 'src/schemas/tags.schema';
 import { Transaction } from 'src/schemas/transactions.schema';
 import { User } from 'src/schemas/users.schema';
 import { Vote } from 'src/schemas/votes.schema';
-import { VotesService } from '../votes/votes.service';
 import { PostDto } from './dto/post.dto';
 
 @Injectable()
@@ -45,7 +44,7 @@ export class PostsService {
     for (let i = 0; i < tags.length; i++) {
       const tag = await this.tagModel.findById(tags[i]);
       if (!tag)
-        throw new NotFoundException(ValidationErrorMessages.TAG_NOTFOUND);
+        throw new NotFoundException(ValidationErrorMessages.TAG_NOT_FOUND);
     }
     await this.postModel.create({ author: user.userId, ...createPostDto });
     return await this.postModel.find({ author: user.userId }).populate('tags');
@@ -135,7 +134,7 @@ export class PostsService {
   async findOne(slug: string, auth?: string) {
     const post = await this.postModel.findOne({ slug: slug });
     if (!post)
-      throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
+      throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
     post.views += 1;
     await post.save();
     let userId = undefined;
@@ -145,10 +144,8 @@ export class PostsService {
       if (token) {
         try {
           decoded = jwt.verify(token, process.env.JWT_SECRET);
-          if (!decoded) throw new UnauthorizedException();
-          userId = decoded.sub;
+          if (decoded) userId = decoded.sub;  
         } catch (err) {
-          throw new UnauthorizedException();
         }
       } else {
         throw new UnauthorizedException();
@@ -166,11 +163,11 @@ export class PostsService {
     for (let i = 0; i < tags.length; i++) {
       const tag = await this.tagModel.findById(tags[i]);
       if (!tag)
-        throw new NotFoundException(ValidationErrorMessages.TAG_NOTFOUND);
+        throw new NotFoundException(ValidationErrorMessages.TAG_NOT_FOUND);
     }
     const post = await this.postModel.findById(id);
     if (!post)
-      throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
+      throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
     if (post.author != user.userId)
       throw new UnauthorizedException(
         ValidationErrorMessages.UPDATE_UNAUTHORIZATION,
@@ -187,7 +184,7 @@ export class PostsService {
   async remove(id: string) {
     const post = await this.postModel.findById(id);
     if (!post)
-      throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
+      throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
     const existingTransaction = await this.transactionModel.findOne({
       post: id,
     });
@@ -211,7 +208,7 @@ export class PostsService {
       this.commentModel
         .find({ post: postId })
         .sort('score')
-        .select('description author score is_accepted')
+        .select('description author score isAccepted createdAt')
         .populate('author', 'displayName avatar')
         .lean(),
     ]);
@@ -276,15 +273,15 @@ export class PostsService {
 
   async getVoteType(
     parentId: string,
-    parent_type: VoteParentTypes,
+    parentType: VoteParentTypes,
     userId?: string,
   ) {
     const vote = await this.voteModel.findOne({
       parent: parentId,
-      parent_type: parent_type,
+      parentType: parentType,
       user: userId,
     });
-    if (vote) return vote.vote_type;
+    if (vote) return vote.voteType;
     return 0;
   }
 }

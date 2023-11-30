@@ -5,7 +5,7 @@ import { User } from './users.schema';
 @Schema()
 export class Token {
   @Prop()
-  refresh_token: string;
+  refreshToken: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   user: User;

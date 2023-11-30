@@ -12,10 +12,10 @@ export class Vote {
   parent;
 
   @Prop({ type: String, enum: VoteParentTypes, required: true })
-  parent_type: string;
+  parentType: string;
 
   @Prop({ type: String, enum: VoteTypes, required: true })
-  vote_type: number;
+  voteType: number;
 }
 
 export const VoteSchema = SchemaFactory.createForClass(Vote);

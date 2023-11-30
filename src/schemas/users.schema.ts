@@ -35,6 +35,12 @@ export class User {
 
   @Prop({ type: String, enum: UserRole, default: UserRole.USER })
   role;
+
+  @Prop()
+  resetToken: string;
+
+  @Prop()
+  resetTokenExpire: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

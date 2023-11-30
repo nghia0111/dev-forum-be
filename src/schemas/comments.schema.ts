@@ -12,7 +12,7 @@ export class Comment extends TextBase {
   post;
 
   @Prop({ default: false })
-  is_accepted: boolean;
+  isAccepted: boolean;
 
   @Prop({ default: 0 })
   score: number;

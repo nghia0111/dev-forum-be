@@ -25,33 +25,33 @@ export class VotesService {
     if (!Object.values(VoteParentTypes).includes(parentType)) return;
     const existingVote = await this.voteModel.findOne({
       parent: parentId,
-      parent_type: parentType,
+      parentType: parentType,
       user: user.userId,
     });
     let voteParent = undefined;
     if(parentType === VoteParentTypes.POST) voteParent = await this.postModel.findById(parentId);
     else voteParent = await this.commentModel.findById(parentId);
     if (existingVote && voteParent) {
-      if (existingVote.vote_type == voteType){
+      if (existingVote.voteType == voteType) {
         voteParent.score -= voteType;
         await voteParent.save();
-        await this.voteModel.findByIdAndDelete(existingVote._id);}
-      else {
-        existingVote.vote_type = 0 - existingVote.vote_type;
-        voteParent.score += 2 * (0 - existingVote.vote_type);
+        await this.voteModel.findByIdAndDelete(existingVote._id);
+      } else {
+        existingVote.voteType = 0 - existingVote.voteType;
+        voteParent.score += 2 * (0 - existingVote.voteType);
         await voteParent.save();
         await existingVote.save();
       }
     } else {
-      if(!voteParent) throw new NotFoundException(ValidationErrorMessages.POST_NOTFOUND);
+      if(!voteParent) throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
       if (!Object.values(VoteTypes).includes(+voteType)) {
         return;
       }
       await this.voteModel.create({
         user: user.userId,
         parent: parentId,
-        parent_type: parentType,
-        vote_type: voteType,
+        parentType: parentType,
+        voteType: voteType,
       });
       voteParent.score += voteType;
       await voteParent.save();

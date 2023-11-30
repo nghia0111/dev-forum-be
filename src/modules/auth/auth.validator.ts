@@ -42,3 +42,12 @@ export const ChangePasswordValidator = Joi.object({
       'string.empty': ValidationErrorMessages.PASSWORD_REQUIRE,
     }),
 });
+
+export const UpdateProfileValidator = Joi.object({
+  displayName: Joi.string().min(3).max(30).required().messages({
+    'string.min': ValidationErrorMessages.DISPLAY_NAME_LENGTH,
+    'string.max': ValidationErrorMessages.DISPLAY_NAME_LENGTH,
+    'any.required': ValidationErrorMessages.DISPLAY_NAME_REQUIRE,
+    'string.empty': ValidationErrorMessages.DISPLAY_NAME_REQUIRE,
+  }),
+});

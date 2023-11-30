@@ -13,7 +13,8 @@ import { AuthService } from './auth.service';
 import { SignUpUserDto } from './dto/signup-user.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { ChangePasswordValidator, SignUpValidator } from './auth.validator';
+import { ChangePasswordValidator, SignUpValidator, UpdateProfileValidator } from './auth.validator';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -42,7 +43,7 @@ export class AuthController {
   @HttpCode(200)
   @Post('change-password')
   changePassword(@Request() req, @Body() password: ChangePasswordDto) {
-    const {currentPassword, ...res} = password;
+    const { currentPassword, ...res } = password;
     const schema = ChangePasswordValidator;
     const validateResult = schema.validate(res);
     if (validateResult.error)
@@ -50,13 +51,18 @@ export class AuthController {
     return this.authService.changePassword(password, req.user);
   }
 
-    @Get('profile')
-    getMe(@Request() req) {
-      return this.authService.getMe(req.user);
-    }
+  @Get('profile')
+  getMe(@Request() req) {
+    return this.authService.getMe(req.user);
+  }
 
-  //   @Delete(':id')
-  //   remove(@Param('id') id: string) {
-  //     return this.authService.remove(+id);
-  //   }
+  @HttpCode(200)
+  @Post('update-profile')
+  updateProfile(@Request() req, @Body() updateProfileDto: UpdateProfileDto) {
+    const schema = UpdateProfileValidator;
+    const validateResult = schema.validate({displayName: updateProfileDto.displayName});
+    if (validateResult.error)
+      throw new BadRequestException(validateResult.error.message);
+    return this.authService.updateProfile(updateProfileDto, req.user);
+  }
 }

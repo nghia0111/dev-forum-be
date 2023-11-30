@@ -40,11 +40,11 @@ export enum ValidationErrorMessages {
   TAGNAME_CONFLICT = 'Tên thẻ đã tồn tại',
   TAGNAME_REQUIRE = 'Vui lòng điền tên thẻ',
   TAG_REQUIRE = 'Vui lòng thêm chủ đề cho bài viết',
-  TAG_NOTFOUND = 'Không tìm thấy thẻ',
+  TAG_NOT_FOUND = 'Không tìm thấy thẻ',
 
   TITLE_REQUIRE = 'Vui lòng điền tiêu đề bài viết',
   DESCRIPTION_REQUIRE = 'Vui lòng điền mô tả bài viết',
-  POST_NOTFOUND = 'Không tìm thấy bài viết',
+  POST_NOT_FOUND = 'Không tìm thấy bài viết',
   POST_DELETE_CONFLICT = 'Không thể xoá bài viết đã tạo ra giao dịch',
   UPDATE_UNAUTHORIZATION = 'Chỉ có tác giả mới có thể cập nhật bài viết',
 
