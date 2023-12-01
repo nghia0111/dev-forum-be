@@ -12,7 +12,7 @@ export class User {
 
   @Prop(
     raw({
-      url: { type: String },
+      secure_url: { type: String },
       public_id: { type: String },
     }),
   )

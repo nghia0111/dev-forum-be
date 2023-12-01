@@ -24,27 +24,18 @@ export class FirebaseService {
 
   // Add methods for interacting with Firebase services (Firestore, Authentication, etc.)
   createUser(user: CreateUserDto){
-    const {displayName, createdAt, email, photoURL} = user;
+    const {id, displayName, createdAt, email, photoURL} = user;
     const firestore = this.admin.firestore();
-    firestore.collection('users').add({
-      displayName,
-      createdAt,
-      email,
-      photoURL
-    })
+    firestore.collection('users').doc(id).set({displayName, createdAt, email, photoURL});
   }
 
-  async updateUser(email: string, user: UpdateUserDto){
-    const { displayName, photoURL } = user;
+  async updateUser(user: UpdateUserDto){
+    const { id, displayName, photoURL } = user;
     const firestore = this.admin.firestore();
-    const userSnapshot = await firestore.collection("users").where("email", '==', email).get()
-    if (userSnapshot.empty) {
+    const userDocument = await firestore.collection('users').doc(id).get();
+    if (!userDocument) {
       throw new NotFoundException(ValidationErrorMessages.USER_NOT_FOUND);
     }
-    const userDocument = userSnapshot.docs[0];
-    await userDocument.ref.update({
-      displayName,
-      photoURL
-    });
+    userDocument.ref.update({displayName, photoURL});
   }
 }
