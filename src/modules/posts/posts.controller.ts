@@ -37,6 +37,12 @@ export class PostsController {
   }
 
   @Public()
+  @Get()
+  getMyPosts(@Req() req: Request) {
+    return this.postsService.getMyPosts(req.user);
+  }
+
+  @Public()
   @Get(':slug')
   findOne(@Param('slug') slug: string, @Req() req: Request) {
     const auth = req.get('Authorization');

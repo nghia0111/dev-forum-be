@@ -42,6 +42,8 @@ export enum ValidationErrorMessages {
   TAG_REQUIRE = 'Vui lòng thêm chủ đề cho bài viết',
   TAG_NOT_FOUND = 'Không tìm thấy thẻ',
 
+  TOPIC_INVALID = 'Tên chủ đề không hợp lệ',
+
   TITLE_REQUIRE = 'Vui lòng điền tiêu đề bài viết',
   DESCRIPTION_REQUIRE = 'Vui lòng điền mô tả bài viết',
   POST_NOT_FOUND = 'Không tìm thấy bài viết',

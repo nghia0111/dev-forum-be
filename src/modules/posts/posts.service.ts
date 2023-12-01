@@ -36,10 +36,6 @@ export class PostsService {
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
   async create(createPostDto: PostDto, user: Record<string, any>) {
-    if (createPostDto.bounty && createPostDto.topic !== TopicTypes.BUG)
-      throw new NotAcceptableException(
-        ValidationErrorMessages.BOUNTY_NOT_ACCEPTABLE,
-      );
     const tags = createPostDto.tags;
     for (let i = 0; i < tags.length; i++) {
       const tag = await this.tagModel.findById(tags[i]);
@@ -154,11 +150,7 @@ export class PostsService {
     return await this.getPostData(post._id, userId);
   }
 
-  async update(user, id: string, updatePostDto: PostDto) {
-    if (updatePostDto.bounty && updatePostDto.topic !== TopicTypes.BUG)
-      throw new NotAcceptableException(
-        ValidationErrorMessages.BOUNTY_NOT_ACCEPTABLE,
-      );
+  async update(user: any, id: string, updatePostDto: PostDto) {
     const tags = updatePostDto.tags;
     for (let i = 0; i < tags.length; i++) {
       const tag = await this.tagModel.findById(tags[i]);
@@ -283,5 +275,9 @@ export class PostsService {
     });
     if (vote) return vote.voteType;
     return 0;
+  }
+
+  async getMyPosts(user: any){
+    return await this.postModel.find({author: user.userId}).populate('tags');
   }
 }

@@ -19,7 +19,6 @@ import { VotesModule } from './modules/votes/votes.module';
     // UsersModule,
     // PostsModule,
     // TagsModule,
-
     // TransactionsModule,
     // RatingsModule,
     VotesModule,
