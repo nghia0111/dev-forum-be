@@ -15,7 +15,6 @@ export class UploadService {
     if (!file.mimetype.startsWith('image')) {
       throw new UnsupportedMediaTypeException(ValidationErrorMessages.FILE_INVALID);
     }
-
     return new Promise<CloudinaryResponse>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
@@ -26,7 +25,6 @@ export class UploadService {
           resolve(result);
         },
       );
-
       streamifier.createReadStream(file.buffer).pipe(uploadStream);
     });
   }

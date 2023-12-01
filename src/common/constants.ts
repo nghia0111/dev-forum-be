@@ -60,3 +60,5 @@ export enum ValidationErrorMessages {
   UNAUTHENTICATED = 'Vui lòng đăng nhập để sử dụng tính năng',
   UNAUTHORIZED = 'Chỉ có tác giả mới có thể thực hiện thao tác'
 }
+
+export const defaultAvatar = "https://res.cloudinary.com/duxsgk7dr/image/upload/v1701434597/dev-forum/g81yowpmtsrxvhviao6a.jpg"

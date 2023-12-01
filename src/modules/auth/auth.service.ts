@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Inject,
   ConflictException,
   NotFoundException,
   UnauthorizedException,
@@ -10,12 +11,14 @@ import { User } from 'src/schemas/users.schema';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { InjectModel } from '@nestjs/mongoose';
-import { ValidationErrorMessages } from 'src/common/constants';
+import { UserRole, ValidationErrorMessages, defaultAvatar } from 'src/common/constants';
 import { LoginUserDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Tag } from 'src/schemas/tags.schema';
+import { FirebaseService } from '../firebase/firebase.service';
+
 
 @Injectable()
 export class AuthService {
@@ -23,6 +26,7 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Tag.name) private tagModel: Model<Tag>,
     private jwtService: JwtService,
+    @Inject(FirebaseService) private readonly firebaseService: FirebaseService,
   ) {}
   async createUser(signUpUser: SignUpUserDto) {
     const { email, password, displayName } = signUpUser;
@@ -32,6 +36,14 @@ export class AuthService {
     if (existingUser) {
       throw new ConflictException(ValidationErrorMessages.EMAIL_CONFLICT);
     }
+    console.log("test1")
+    const firebaseUser = {
+      displayName: signUpUser.displayName,
+      email: signUpUser.email,
+      createdAt: new Date(),
+      photoURL: defaultAvatar
+    }
+    this.firebaseService.createUser(firebaseUser)
     const hashedPassword = await bcrypt.hash(
       password,
       Number(process.env.SALT),
@@ -40,6 +52,7 @@ export class AuthService {
       displayName,
       email,
       password: hashedPassword,
+      role: UserRole.USER
     });
   }
 
@@ -116,19 +129,26 @@ export class AuthService {
       }),
     );
     existingUser.displayName = updateProfileDto.displayName;
-    existingUser.avatar = updateProfileDto.avatar;
+    if (updateProfileDto.avatar) existingUser.avatar = updateProfileDto.avatar;
     existingUser.description = updateProfileDto.description;
     existingUser.favorites = updateProfileDto.favorites;
     await existingUser.save();
 
+    const firebaseUser = {displayName: updateProfileDto.displayName, photoURL: updateProfileDto.avatar?.secure_url || defaultAvatar};
+    console.log(firebaseUser.photoURL)
+    await this.firebaseService.updateUser(existingUser.email, firebaseUser)
+
     // Use lean() for refined object
-    const _user = await this.userModel.findById(user.userId).populate("favorites").lean();
+    const _user = await this.userModel
+      .findById(user.userId)
+      .populate('favorites')
+      .lean();
 
     const { password, savedPosts, ...result } = _user;
     return result;
   }
 
-  async requestResetPassword(email: string){
+  async requestResetPassword(email: string) {
     const user = await this.userModel.findOne({ email: email });
     if (!user) {
       throw new NotFoundException(ValidationErrorMessages.USER_NOT_FOUND);
