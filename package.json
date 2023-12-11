@@ -31,6 +31,7 @@
     "@nestjs/platform-socket.io": "^10.2.8",
     "@nestjs/websockets": "^10.2.8",
     "@sendgrid/mail": "^7.7.0",
+    "agora-token": "^2.0.3",
     "bcrypt": "^5.1.1",
     "cloudinary": "^1.41.0",
     "compression": "^1.7.4",

@@ -19,6 +19,12 @@ export enum VoteTypes {
   DOWN_VOTE = -1,
 }
 
+export enum NotificationTypes {
+  CALL = 'call',
+  COMMENT = 'comment',
+  REPLY = 'reply'
+}
+
 export enum ValidationErrorMessages {
   DISPLAY_NAME_LENGTH = 'Tên hiển thị phải từ 3 - 30 ký tự',
   DISPLAY_NAME_REQUIRE = 'Vui lòng điền tên hiển thị',
@@ -62,3 +68,9 @@ export enum ValidationErrorMessages {
 }
 
 export const defaultAvatar = "https://res.cloudinary.com/duxsgk7dr/image/upload/v1701434597/dev-forum/g81yowpmtsrxvhviao6a.jpg"
+
+export enum VNPayParams {
+  version = '2.1.0',
+  command = 'pay',
+  
+}

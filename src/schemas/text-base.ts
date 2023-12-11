@@ -8,5 +8,5 @@ export class TextBase extends TimestampBase{
   description: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  author: User;
+  author;
 }
