@@ -23,7 +23,7 @@ export class Notification extends TimestampBase {
       token: { type: String },
       channelName: { type: String },
       commentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Comment' },
-      postId: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' },
+      postSlug: { type: String },
     }),
   )
   extraData: Record<string, any>;

@@ -132,7 +132,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
       receiver: receiver._id,
       type: notiType,
       hasSeen: false,
-      extraData: { commentId: comment._id.toString(), postId: data.postId },
+      extraData: { commentId: comment._id.toString(), postSlug: postData.post.slug },
     });
     if (notifiedSocket) {
       notifiedSocket.emit('notification', {

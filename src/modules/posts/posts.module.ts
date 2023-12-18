@@ -11,6 +11,7 @@ import { User, UserSchema } from 'src/schemas/users.schema';
 import { Vote, VoteSchema } from 'src/schemas/votes.schema';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
+import { Notification, NotificationSchema } from 'src/schemas/notifications.schema';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PostsService } from './posts.service';
       { name: Vote.name, schema: VoteSchema },
       { name: Post.name, schema: PostSchema },
       { name: User.name, schema: UserSchema },
+      { name: Notification.name, schema: NotificationSchema },
     ]),
   ],
   controllers: [PostsController],

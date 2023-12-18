@@ -24,6 +24,7 @@ import { Transaction } from 'src/schemas/transactions.schema';
 import { User } from 'src/schemas/users.schema';
 import { Vote } from 'src/schemas/votes.schema';
 import { PostDto } from './dto/post.dto';
+import { Notification } from 'src/schemas/notifications.schema';
 
 @Injectable()
 export class PostsService {
@@ -34,6 +35,8 @@ export class PostsService {
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
     @InjectModel(Vote.name) private voteModel: Model<Vote>,
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Notification.name)
+    private notificationModel: Model<Notification>,
   ) {}
   async create(createPostDto: PostDto, user: Record<string, any>) {
     const tags = createPostDto.tags;
@@ -140,11 +143,12 @@ export class PostsService {
       if (token) {
         try {
           decoded = jwt.verify(token, process.env.JWT_SECRET);
-          if (decoded) userId = decoded.sub;  
-        } catch (err) {
-        }
-      } else {
-        throw new UnauthorizedException();
+          if (decoded) userId = decoded.sub;
+          await this.notificationModel.updateMany(
+            { receiver: userId, hasSeen: false, 'extraData.postSlug': slug },
+            { hasSeen: true },
+          );
+        } catch (err) {}
       }
     }
     return await this.getPostData(post._id, userId);
@@ -277,7 +281,7 @@ export class PostsService {
     return 0;
   }
 
-  async getMyPosts(user: any){
-    return await this.postModel.find({author: user.userId}).populate('tags');
+  async getMyPosts(user: any) {
+    return await this.postModel.find({ author: user.userId }).populate('tags');
   }
 }

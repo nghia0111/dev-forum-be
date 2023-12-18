@@ -16,14 +16,13 @@ import { VotesModule } from './modules/votes/votes.module';
 import { User, UserSchema } from './schemas/users.schema';
 import { Notification, NotificationSchema } from './schemas/notifications.schema';
 import { AgoraModule } from './modules/agora/agora.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
-    // UsersModule,
-    // PostsModule,
-    // TagsModule,
     // TransactionsModule,
     // RatingsModule,
+    NotificationsModule,
     VotesModule,
     AuthModule,
     UploadModule,
