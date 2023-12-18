@@ -19,7 +19,7 @@ export class VotesService {
     postId: string,
     parentId: string,
     parentType: any,
-    voteType: any,
+    voteType: number,
     user: any,
   ) {
     if (!Object.values(VoteParentTypes).includes(parentType)) return;
@@ -38,7 +38,7 @@ export class VotesService {
         await this.voteModel.findByIdAndDelete(existingVote._id);
       } else {
         existingVote.voteType = 0 - existingVote.voteType;
-        voteParent.score += 2 * (0 - existingVote.voteType);
+        voteParent.score += 2 * existingVote.voteType;
         await voteParent.save();
         await existingVote.save();
       }

@@ -13,6 +13,6 @@ export class VotesController {
     @Query('parent') parent: string,
     @Req() req: Request,
   ) {
-    return this.votesService.create(postId, parentId, parent, voteType, req.user);
+    return this.votesService.create(postId, parentId, parent, +voteType, req.user);
   }
 }
