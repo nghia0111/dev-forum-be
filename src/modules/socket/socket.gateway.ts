@@ -205,11 +205,12 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
       hasSeen: false,
       extraData: { ...tokenData },
     });
+    const leanedNoti = notification.toObject();
     if (guest) {
       guest.emit('notification', {
         senderName: sender.displayName,
         senderAvatar: sender.avatar,
-        ...notification,
+        ...leanedNoti,
       });
     }
   }
