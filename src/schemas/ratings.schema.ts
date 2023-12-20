@@ -12,10 +12,10 @@ export class Rating extends TimestampBase{
   description: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  reviewer: User;
+  reviewer;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  reviewee: User;
+  reviewee;
 }
 
 export const RatingSchema = SchemaFactory.createForClass(Rating);

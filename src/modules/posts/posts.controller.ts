@@ -37,9 +37,9 @@ export class PostsController {
   }
 
   @Public()
-  @Get()
-  getMyPosts(@Req() req: Request) {
-    return this.postsService.getMyPosts(req.user);
+  @Get('saved-posts')
+  getSavedPosts(@Req() req: Request) {
+    return this.postsService.getSavedPosts(req.user);
   }
 
   @Public()

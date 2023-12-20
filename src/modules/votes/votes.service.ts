@@ -30,11 +30,16 @@ export class VotesService {
     });
     let voteParent = undefined;
     if(parentType === VoteParentTypes.POST) voteParent = await this.postModel.findById(parentId);
-    else voteParent = await this.commentModel.findById(parentId);
+    else voteParent = await this.commentModel
+      .findById(parentId)
+      .populate('author', 'displayName avatar');
+
+    let vote = voteType;
     if (existingVote && voteParent) {
       if (existingVote.voteType == voteType) {
         voteParent.score -= voteType;
         await voteParent.save();
+        vote = 0;
         await this.voteModel.findByIdAndDelete(existingVote._id);
       } else {
         existingVote.voteType = 0 - existingVote.voteType;
@@ -56,6 +61,10 @@ export class VotesService {
       voteParent.score += voteType;
       await voteParent.save();
     }
-    return await this.postService.getPostData(postId, user.userId);
+    voteParent = voteParent.toObject();
+    if(parentType == VoteParentTypes.COMMENT){
+      return {...voteParent, vote: vote}
+    }
+    return;
   }
 }

@@ -17,11 +17,14 @@ import { User, UserSchema } from './schemas/users.schema';
 import { Notification, NotificationSchema } from './schemas/notifications.schema';
 import { AgoraModule } from './modules/agora/agora.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { CommentsModule } from './modules/comments/comments.module';
+import { UsersModule } from './modules/users/users.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 @Module({
   imports: [
-    // TransactionsModule,
-    // RatingsModule,
+    ReportsModule,
+    UsersModule,
     NotificationsModule,
     VotesModule,
     AuthModule,
@@ -29,6 +32,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     PostsModule,
     TagsModule,
     AgoraModule,
+    CommentsModule,
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     MongooseModule.forRoot(
       `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.ff8zaru.mongodb.net/${process.env.MONGO_DATABASE}?retryWrites=true&w=majority`,

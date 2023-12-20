@@ -50,36 +50,25 @@ export class PostsService {
   }
 
   async findPosts(params: any, auth?: string) {
-    const { isMyPosts, filter, isBountied, sort, topic, search } = params;
+    const { isMyPosts, filter, isBountied, sort, topic, tag, search } = params;
     let posts = await this.postModel
       .find()
       .populate('tags')
       .populate('author', 'avatar displayName')
       .lean();
+
+    const token = auth.split(' ')[1];
+    let decoded;
+    let currentUser = undefined;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if (!decoded) decoded = undefined;
+    } catch (err) {
+      decoded = undefined;
+    }
+    if (decoded) currentUser = await this.userModel.findById(decoded.sub);
     if (isMyPosts === 'true') {
-      if (!auth) throw new UnauthorizedException();
-      const token = auth.split(' ')[1];
-      let decoded;
-      if (token) {
-        try {
-          decoded = jwt.verify(token, process.env.JWT_SECRET);
-          if (!decoded) throw new UnauthorizedException();
-        } catch (err) {
-          throw new UnauthorizedException();
-        }
-      } else {
-        throw new UnauthorizedException();
-      }
-      posts = await Promise.all(
-        posts.map(async (post) => {
-          const existingUser = await this.userModel.findById(decoded.sub);
-          const newPost = {
-            ...post,
-            isSaved: existingUser.savedPosts.includes(post._id),
-          };
-          return newPost;
-        }),
-      );
+      if (!currentUser) throw new UnauthorizedException();
       posts = posts.filter((post) => {
         return (
           (post.author as unknown as { _id: string })._id.toString() ==
@@ -109,6 +98,15 @@ export class PostsService {
     if (Object.values(TopicTypes).includes(topic)) {
       posts = posts.filter((post) => post.topic === topic);
     }
+    if (tag) {
+      const _tag = await this.tagModel.findOne({ name: tag });
+      if (!_tag)
+        throw new NotFoundException(ValidationErrorMessages.TAG_NOT_FOUND);
+      posts = posts.filter((post) => {
+        const tagIds = post.tags.map((tag) => tag._id.toString());
+        return tagIds.includes(_tag._id.toString());
+      });
+    }
     if (search) {
       const searchArr = search.toLowerCase().split(' ');
       posts = posts.filter((post) =>
@@ -123,6 +121,9 @@ export class PostsService {
         const newPost = {
           ...post,
           answerCount,
+          isSaved: currentUser
+            ? currentUser.savedPosts.includes(post._id.toString())
+            : false,
         };
         return newPost;
       }),
@@ -209,26 +210,31 @@ export class PostsService {
         .lean(),
     ]);
 
+    let currentUser = undefined;
+    if (userId) {
+      currentUser = await this.userModel.findById(userId);
+    }
     // Use Promise.all for parallelizing vote retrieval for post and comments
-    const [postVote] = await Promise.all([
-      this.getVoteType(post._id, VoteParentTypes.POST, userId),
-      // Parallelize vote retrieval for comments
-      Promise.all(
-        comments.map(async (comment) => ({
-          ...comment,
-          vote: await this.getVoteType(
-            comment._id,
-            VoteParentTypes.COMMENT,
-            userId,
-          ),
-        })),
-      ),
-    ]);
+    // const [postVote] = await Promise.all([
+    //   this.getVoteType(post._id, VoteParentTypes.POST, userId),
+    //   // Parallelize vote retrieval for comments
+    //   Promise.all(
+    //     comments.map(async (comment) => ({
+    //       ...comment,
+    //       vote: await this.getVoteType(
+    //         comment._id,
+    //         VoteParentTypes.COMMENT,
+    //         userId,
+    //       ),
+    //     })),
+    //   ),
+    // ]);
 
     // Combine the results
     const newPost = {
       ...post,
-      vote: postVote,
+      isSaved: currentUser ? currentUser.savedPosts.includes(postId) : false,
+      vote: await this.getVoteType(post._id, VoteParentTypes.POST, userId),
     };
 
     const postAnswers = await Promise.all(
@@ -281,7 +287,26 @@ export class PostsService {
     return 0;
   }
 
-  async getMyPosts(user: any) {
-    return await this.postModel.find({ author: user.userId }).populate('tags');
+  async getSavedPosts(user: any) {
+    const existingUser = await this.userModel.findById(user.userId);
+    if (!existingUser)
+      throw new UnauthorizedException(ValidationErrorMessages.UNAUTHENTICATED);
+    const posts = await this.postModel
+      .find({ _id: { $in: existingUser.savedPosts } })
+      .populate('tags');
+    const newPosts = await Promise.all(
+      posts.map(async (post) => {
+        const answerCount = await this.commentModel.countDocuments({
+          post: post._id,
+        });
+        const newPost = {
+          ...post,
+          isSaved: true,
+          answerCount,
+        };
+        return newPost;
+      }),
+    );
+    return newPosts;
   }
 }
