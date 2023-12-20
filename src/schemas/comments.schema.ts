@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { Post } from './posts.schema';
 import { TextBase } from './text-base';
 
 @Schema({ timestamps: true, toJSON: { virtuals: true } })

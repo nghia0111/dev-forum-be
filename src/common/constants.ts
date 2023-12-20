@@ -64,7 +64,9 @@ export enum ValidationErrorMessages {
   COMMENT_NOT_FOUND = 'Không tìm thấy bình luận',
 
   UNAUTHENTICATED = 'Vui lòng đăng nhập để sử dụng tính năng',
-  UNAUTHORIZED = 'Chỉ có tác giả mới có thể thực hiện thao tác'
+  UNAUTHORIZED = 'Chỉ có tác giả mới có thể thực hiện thao tác',
+
+  ADMIN_REQUIRED = 'Chỉ có quản trị viên mới được phép truy cập'
 }
 
 export const defaultAvatar = "https://res.cloudinary.com/duxsgk7dr/image/upload/v1701434597/dev-forum/g81yowpmtsrxvhviao6a.jpg"
