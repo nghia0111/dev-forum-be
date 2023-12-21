@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
   NotificationTypes,
+  UserRole,
   ValidationErrorMessages,
   VoteParentTypes,
   VoteTypes,
@@ -92,15 +93,32 @@ export class CommentsService {
     const comment = await this.commentModel.findById(commentId);
     if (!comment)
       throw new NotFoundException(ValidationErrorMessages.COMMENT_NOT_FOUND);
+
+    const commentContent = comment.description;
+    const receiverId = comment.author.toString();
     const postId = comment.post;
-    if (user.userId != comment.author.toString())
+    const _user = await this.userModel.findById(user.userId);
+    if (user.userId != comment.author.toString() && _user.role != UserRole.ADMIN)
       throw new UnauthorizedException(ValidationErrorMessages.UNAUTHORIZED);
     await this.commentModel.deleteMany({ parent: comment._id.toString() });
     await this.commentModel.findByIdAndDelete(commentId);
+
     const postData = await this.postService.getPostData(postId);
     this.socketGateway.server
       .to(postId.toString())
       .emit('updatePost', postData);
+
+    if(user.userId != receiverId){
+      const notiData = {
+        commentContent,
+      };
+      await this.socketGateway.createNotification(
+        user.userId,
+        receiverId,
+        NotificationTypes.DELETE_COMMENT,
+        notiData,
+      );
+    }
 
     return postData;
   }

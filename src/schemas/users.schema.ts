@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { UserRole } from 'src/common/constants';
+import { UserRole, UserStatus } from 'src/common/constants';
 
 @Schema()
 export class User {
@@ -35,6 +35,9 @@ export class User {
 
   @Prop({ type: String, enum: UserRole, default: UserRole.USER })
   role;
+
+  @Prop({ type: String, enum: UserStatus, default: UserStatus.ACTIVE })
+  status;
 
   @Prop()
   resetToken: string;

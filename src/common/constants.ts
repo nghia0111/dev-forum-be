@@ -8,6 +8,11 @@ export enum UserRole {
   USER = 'User',
 }
 
+export enum UserStatus {
+  BANNED = 'Banned',
+  ACTIVE = 'Active',
+}
+
 export enum TopicTypes {
   DISCUSS = 'discuss',
   NEWS = 'news',
@@ -22,7 +27,8 @@ export enum VoteTypes {
 export enum NotificationTypes {
   CALL = 'call',
   COMMENT = 'comment',
-  REPLY = 'reply'
+  REPLY = 'reply',
+  DELETE_COMMENT = 'delete_comment'
 }
 
 export enum ValidationErrorMessages {
@@ -66,13 +72,15 @@ export enum ValidationErrorMessages {
   UNAUTHENTICATED = 'Vui lòng đăng nhập để sử dụng tính năng',
   UNAUTHORIZED = 'Chỉ có tác giả mới có thể thực hiện thao tác',
 
-  ADMIN_REQUIRED = 'Chỉ có quản trị viên mới được phép truy cập'
+  ADMIN_REQUIRED = 'Chỉ có quản trị viên mới được phép truy cập',
+
+  USER_BANNED = 'Tài khoản của bạn đã bị khoá, vui lòng liên hệ đội ngũ phát triển để biết thêm chi tiết',
 }
 
-export const defaultAvatar = "https://res.cloudinary.com/duxsgk7dr/image/upload/v1701434597/dev-forum/g81yowpmtsrxvhviao6a.jpg"
+export const defaultAvatar =
+  'https://res.cloudinary.com/duxsgk7dr/image/upload/v1701434597/dev-forum/g81yowpmtsrxvhviao6a.jpg';
 
 export enum VNPayParams {
   version = '2.1.0',
   command = 'pay',
-  
 }
