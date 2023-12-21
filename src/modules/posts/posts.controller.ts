@@ -36,10 +36,14 @@ export class PostsController {
     return this.postsService.findPosts(params, auth);
   }
 
-  @Public()
   @Get('saved-posts')
   getSavedPosts(@Req() req: Request) {
     return this.postsService.getSavedPosts(req.user);
+  }
+
+  @Post('save-post')
+  savePost(@Req() req: Request, @Body('postId') postId:string) {
+    return this.postsService.savePost(req.user, postId);
   }
 
   @Public()

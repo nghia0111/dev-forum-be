@@ -293,7 +293,7 @@ export class PostsService {
       throw new UnauthorizedException(ValidationErrorMessages.UNAUTHENTICATED);
     const posts = await this.postModel
       .find({ _id: { $in: existingUser.savedPosts } })
-      .populate('tags');
+      .populate('tags').lean();
     const newPosts = await Promise.all(
       posts.map(async (post) => {
         const answerCount = await this.commentModel.countDocuments({
@@ -308,5 +308,18 @@ export class PostsService {
       }),
     );
     return newPosts;
+  }
+
+  async savePost(user: any, postId: string) {
+    const existingUser = await this.userModel.findById(user.userId);
+    if (!existingUser)
+      throw new UnauthorizedException(ValidationErrorMessages.UNAUTHENTICATED);
+    const post = await this.postModel
+      .findById(postId);
+    if (!post)
+      throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
+    if(existingUser.savedPosts.includes(postId)) existingUser.savedPosts.pull(postId);
+    else existingUser.savedPosts.push(postId);
+    await existingUser.save();
   }
 }
