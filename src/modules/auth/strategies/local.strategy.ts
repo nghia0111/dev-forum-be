@@ -18,7 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
-    if(user.status == UserStatus.BANNED){
+    if(user._doc.status == UserStatus.BANNED){
       throw new BadRequestException(ValidationErrorMessages.USER_BANNED);
     }
     return user;

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotAcceptableException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserRole, UserStatus, ValidationErrorMessages } from 'src/common/constants';
@@ -19,6 +19,8 @@ export class UsersService {
     if(_admin.role != UserRole.ADMIN) throw new UnauthorizedException(ValidationErrorMessages.ADMIN_REQUIRED);
     const _user = await this.userModel.findById(userId);
     if(!_user) throw new NotFoundException(ValidationErrorMessages.USER_NOT_FOUND);
+    if (_user.role != UserRole.USER)
+      throw new NotAcceptableException(ValidationErrorMessages.ADMIN_UNBANNABLE);
     if(_user.status == UserStatus.ACTIVE) _user.status = UserStatus.BANNED;
     else _user.status = UserStatus.ACTIVE;
     await _user.save();

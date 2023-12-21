@@ -9,8 +9,8 @@ export enum UserRole {
 }
 
 export enum UserStatus {
-  BANNED = 'Banned',
-  ACTIVE = 'Active',
+  BANNED = 'banned',
+  ACTIVE = 'active',
 }
 
 export enum TopicTypes {
@@ -73,6 +73,7 @@ export enum ValidationErrorMessages {
   UNAUTHORIZED = 'Chỉ có tác giả mới có thể thực hiện thao tác',
 
   ADMIN_REQUIRED = 'Chỉ có quản trị viên mới được phép truy cập',
+  ADMIN_UNBANNABLE = 'Không thể thay đổi trạng thái của quản trị viên',
 
   USER_BANNED = 'Tài khoản của bạn đã bị khoá, vui lòng liên hệ đội ngũ phát triển để biết thêm chi tiết',
 }

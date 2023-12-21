@@ -31,6 +31,7 @@ export class ReportsService {
     return await this.reportModel
       .find()
       .sort('-createdAt')
-      .populate('accuser', 'displayName avatar');
+      .populate('accuser', 'displayName avatar')
+      .populate('comment', 'description');
   }
 }
