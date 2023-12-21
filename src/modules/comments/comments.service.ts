@@ -117,6 +117,12 @@ export class CommentsService {
     await comment.save();
     post.isAnswered = true;
     await post.save();
+
+    const postData = await this.postService.getPostData(post._id.toString());
+    this.socketGateway.server
+      .to(post._id.toString())
+      .emit('updatePost', postData);
+
     return;
   }
 }

@@ -283,7 +283,7 @@ export class PostsService {
       parentType: parentType,
       user: userId,
     });
-    if (vote) return vote.voteType;
+    if (vote) return +vote.voteType;
     return 0;
   }
 

@@ -49,7 +49,7 @@ export class VotesService {
       }
     } else {
       if(!voteParent) throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
-      if (!Object.values(VoteTypes).includes(+voteType)) {
+      if (!Object.values(VoteTypes).includes(voteType)) {
         return;
       }
       await this.voteModel.create({
