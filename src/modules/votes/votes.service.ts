@@ -6,6 +6,7 @@ import { Vote } from 'src/schemas/votes.schema';
 import { PostsService } from '../posts/posts.service';
 import { Post } from 'src/schemas/posts.schema';
 import { Comment } from 'src/schemas/comments.schema';
+import { SocketGateway } from '../socket/socket.gateway';
 
 @Injectable()
 export class VotesService {
@@ -13,6 +14,7 @@ export class VotesService {
     @InjectModel(Vote.name) private voteModel: Model<Vote>,
     @InjectModel(Post.name) private postModel: Model<Post>,
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
+    private readonly socketGateway: SocketGateway,
     private postService: PostsService,
   ) {}
   async create(
@@ -29,10 +31,12 @@ export class VotesService {
       user: user.userId,
     });
     let voteParent = undefined;
-    if(parentType === VoteParentTypes.POST) voteParent = await this.postModel.findById(parentId);
-    else voteParent = await this.commentModel
-      .findById(parentId)
-      .populate('author', 'displayName avatar');
+    if (parentType === VoteParentTypes.POST)
+      voteParent = await this.postModel.findById(parentId);
+    else
+      voteParent = await this.commentModel
+        .findById(parentId)
+        .populate('author', 'displayName avatar');
 
     let vote = voteType;
     if (existingVote && voteParent) {
@@ -48,7 +52,8 @@ export class VotesService {
         await existingVote.save();
       }
     } else {
-      if(!voteParent) throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
+      if (!voteParent)
+        throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
       if (!Object.values(VoteTypes).includes(voteType)) {
         return;
       }
@@ -61,10 +66,16 @@ export class VotesService {
       voteParent.score += voteType;
       await voteParent.save();
     }
-    voteParent = voteParent.toObject();
-    if(parentType == VoteParentTypes.COMMENT){
-      return {...voteParent, vote: vote}
-    }
-    return;
+
+    const postData = await this.postService.getPostData(postId.toString());
+    this.socketGateway.server
+      .to(postId)
+      .emit('updatePost', postData);
+
+    // voteParent = voteParent.toObject();
+    // if (parentType == VoteParentTypes.COMMENT) {
+    //   return { ...voteParent, vote: vote };
+    // }
+    // return;
   }
 }

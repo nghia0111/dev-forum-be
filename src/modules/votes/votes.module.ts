@@ -6,6 +6,7 @@ import { Post, PostSchema } from 'src/schemas/posts.schema';
 import { Comment, CommentSchema } from 'src/schemas/comments.schema';
 import { Vote, VoteSchema } from 'src/schemas/votes.schema';
 import { PostsModule } from '../posts/posts.module';
+import { SocketModule } from '../socket/socket.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { PostsModule } from '../posts/posts.module';
       { name: Comment.name, schema: CommentSchema },
       { name: Vote.name, schema: VoteSchema },
     ]),
+    SocketModule,
     PostsModule,
   ],
   controllers: [VotesController],
