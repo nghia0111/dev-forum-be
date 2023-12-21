@@ -293,7 +293,8 @@ export class PostsService {
       throw new UnauthorizedException(ValidationErrorMessages.UNAUTHENTICATED);
     const posts = await this.postModel
       .find({ _id: { $in: existingUser.savedPosts } })
-      .populate('tags').lean();
+      .populate('tags')
+      .populate('author', 'displayName avatar').lean();
     const newPosts = await Promise.all(
       posts.map(async (post) => {
         const answerCount = await this.commentModel.countDocuments({
