@@ -13,6 +13,7 @@ import {
   VoteParentTypes,
   VoteTypes,
 } from 'src/common/constants';
+import * as jwt from 'jsonwebtoken';
 import { Vote } from 'src/schemas/votes.schema';
 import { PostsService } from '../posts/posts.service';
 import { Post } from 'src/schemas/posts.schema';
@@ -124,5 +125,41 @@ export class CommentsService {
       .emit('updatePost', postData);
 
     return;
+  }
+
+  async getReplies(commentId: string, auth?: string) {
+    let decoded = undefined;
+    let currentUser = undefined;
+    if (auth) {
+      const token = auth.split(' ')[1];
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
+      } catch (err) {
+        decoded = undefined;
+      }
+    }
+    if (decoded) currentUser = decoded.sub;
+    const comment = await this.commentModel.findById(commentId);
+    if (!comment)
+      throw new NotFoundException(ValidationErrorMessages.COMMENT_NOT_FOUND);
+    const _replies = await this.commentModel
+      .find({ parent: commentId })
+      .sort('-createdAt')
+      .select('description author')
+      .populate('author', 'displayName avatar')
+      .lean();
+
+    const replies = await Promise.all(
+      _replies.map(async (reply) => ({
+        ...reply,
+        vote: await this.postService.getVoteType(
+          reply._id,
+          VoteParentTypes.COMMENT,
+          currentUser,
+        ),
+      })),
+    );
+
+    return replies;
   }
 }

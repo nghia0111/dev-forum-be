@@ -57,15 +57,18 @@ export class PostsService {
       .populate('author', 'avatar displayName')
       .lean();
 
-    const token = auth.split(' ')[1];
-    let decoded;
+    
+    let decoded = undefined;
     let currentUser = undefined;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
-      if (!decoded) decoded = undefined;
-    } catch (err) {
-      decoded = undefined;
+    if(auth){
+      const token = auth.split(' ')[1];
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
+      } catch (err) {
+        decoded = undefined;
+      }
     }
+    
     if (decoded) currentUser = await this.userModel.findById(decoded.sub);
     if (isMyPosts === 'true') {
       if (!currentUser) throw new UnauthorizedException();
@@ -239,25 +242,6 @@ export class PostsService {
 
     const postAnswers = await Promise.all(
       comments.map(async (comment) => {
-        // Parallelize the retrieval of replies and their votes
-        const _replies = await this.commentModel
-          .find({ parent: comment._id })
-          .sort('createdAt')
-          .select('description author')
-          .populate('author', 'displayName avatar')
-          .lean();
-
-        const replies = await Promise.all(
-          _replies.map(async (reply) => ({
-            ...reply,
-            vote: await this.getVoteType(
-              reply._id,
-              VoteParentTypes.COMMENT,
-              userId,
-            ),
-          })),
-        );
-
         return {
           ...comment,
           vote: await this.getVoteType(
@@ -265,7 +249,7 @@ export class PostsService {
             VoteParentTypes.COMMENT,
             userId,
           ),
-          replies: replies,
+          replies: await this.commentModel.countDocuments({parent: comment._id})
         };
       }),
     );

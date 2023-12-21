@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Param,
   Query,
   Req,
@@ -13,6 +14,7 @@ import { CommentsService } from './comments.service';
 import { Request } from 'express';
 import { CommentDto } from './dto/comment.dto';
 import { CommentValidator } from './comments.validator';
+import { Public } from 'src/common/decorators';
 
 @Controller('comments')
 export class CommentsController {
@@ -35,10 +37,7 @@ export class CommentsController {
   }
 
   @Post('/mark-as-best/:commentId')
-  markAsBestAnswer(
-    @Param('commentId') commentId: string,
-    @Req() req: Request,
-  ) {
+  markAsBestAnswer(@Param('commentId') commentId: string, @Req() req: Request) {
     return this.commentsService.markAsBest(commentId, req.user);
   }
 
@@ -55,6 +54,13 @@ export class CommentsController {
     if (validateResult.error)
       throw new BadRequestException(validateResult.error.message);
     return this.commentsService.updateComment(commentId, commentDto, req.user);
+  }
+
+  @Public()
+  @Get(':commentId/replies')
+  getReplies(@Param('commentId') commentId: string, @Req() req: Request) {
+    const auth = req.get('Authorization');
+    return this.commentsService.getReplies(commentId, auth);
   }
 
   @Delete(':commentId')
