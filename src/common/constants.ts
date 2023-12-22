@@ -66,6 +66,9 @@ export enum ValidationErrorMessages {
   BOUNTY_MIN = 'Mức thưởng tối thiểu là 10000VND',
   BOUNTY_NOT_ACCEPTABLE = 'Tiền thưởng chỉ áp dụng với bài viết sửa lỗi',
 
+  AMOUNT_INVALID = 'Số tiền không hợp lệ',
+  AMOUNT_MIN = 'Số tiền nạp tối thiểu là 1 USD',
+
   COMMENT_NOT_EMPTY = 'Bình luận không được để trống',
   COMMENT_NOT_FOUND = 'Không tìm thấy bình luận',
 

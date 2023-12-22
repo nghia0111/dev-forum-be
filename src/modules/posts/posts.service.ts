@@ -1,12 +1,8 @@
 import {
-  Inject,
   Injectable,
   NotAcceptableException,
   NotFoundException,
-  UnauthorizedException,
-  HttpException,
-  HttpStatus,
-  forwardRef,
+  UnauthorizedException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as jwt from 'jsonwebtoken';
@@ -14,17 +10,16 @@ import { Model } from 'mongoose';
 import {
   TopicTypes,
   ValidationErrorMessages,
-  VoteParentTypes,
-  VoteTypes,
+  VoteParentTypes
 } from 'src/common/constants';
 import { Comment } from 'src/schemas/comments.schema';
+import { Notification } from 'src/schemas/notifications.schema';
 import { Post } from 'src/schemas/posts.schema';
 import { Tag } from 'src/schemas/tags.schema';
 import { Transaction } from 'src/schemas/transactions.schema';
 import { User } from 'src/schemas/users.schema';
 import { Vote } from 'src/schemas/votes.schema';
 import { PostDto } from './dto/post.dto';
-import { Notification } from 'src/schemas/notifications.schema';
 
 @Injectable()
 export class PostsService {

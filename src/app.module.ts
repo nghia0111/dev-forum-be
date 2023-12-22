@@ -20,9 +20,11 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { CommentsModule } from './modules/comments/comments.module';
 import { UsersModule } from './modules/users/users.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { PaypalModule } from './modules/paypal/paypal.module';
 
 @Module({
   imports: [
+    PaypalModule,
     ReportsModule,
     UsersModule,
     NotificationsModule,

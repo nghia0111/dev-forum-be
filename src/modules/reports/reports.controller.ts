@@ -21,7 +21,7 @@ export class ReportsController {
   }
 
   @Put(':reportId')
-  acceptReport(@Req() req: Request, @Param('reportId') reportId: string) {
+  acceptReport(@Param('reportId') reportId: string) {
     return this.reportsService.acceptReport(reportId);
   }
 
