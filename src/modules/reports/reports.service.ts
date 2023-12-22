@@ -21,6 +21,7 @@ export class ReportsService {
     await this.reportModel.create({
       accuser: user.userId,
       comment: commentId,
+      description: comment.description,
       post: comment.post.toString(),
     });
   }

@@ -22,6 +22,7 @@ import { Comment } from 'src/schemas/comments.schema';
 import { User } from 'src/schemas/users.schema';
 import { CommentDto } from './dto/comment.dto';
 import { SocketGateway } from '../socket/socket.gateway';
+import { Report } from 'src/schemas/reports.schema';
 
 @Injectable()
 export class CommentsService {
@@ -29,6 +30,7 @@ export class CommentsService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Post.name) private postModel: Model<Post>,
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
+    @InjectModel(Report.name) private reportModel: Model<Report>,
     private readonly socketGateway: SocketGateway,
     private postService: PostsService,
   ) {}
@@ -98,8 +100,15 @@ export class CommentsService {
     const receiverId = comment.author.toString();
     const postId = comment.post;
     const _user = await this.userModel.findById(user.userId);
-    if (user.userId != comment.author.toString() && _user.role != UserRole.ADMIN)
+    if (
+      user.userId != comment.author.toString() &&
+      _user.role != UserRole.ADMIN
+    )
       throw new UnauthorizedException(ValidationErrorMessages.UNAUTHORIZED);
+    await this.reportModel.updateMany(
+      { comment: comment._id.toString() },
+      { comment: undefined },
+    );
     await this.commentModel.deleteMany({ parent: comment._id.toString() });
     await this.commentModel.findByIdAndDelete(commentId);
 
@@ -108,7 +117,7 @@ export class CommentsService {
       .to(postId.toString())
       .emit('updatePost', postData);
 
-    if(user.userId != receiverId){
+    if (user.userId != receiverId) {
       const notiData = {
         commentContent,
       };

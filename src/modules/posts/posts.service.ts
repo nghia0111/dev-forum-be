@@ -206,7 +206,7 @@ export class PostsService {
         .populate('author', 'displayName avatar')
         .lean(),
       this.commentModel
-        .find({ post: postId })
+        .find({ post: postId, parent: undefined })
         .sort('score')
         .select('description author score isAccepted createdAt')
         .populate('author', 'displayName avatar')
