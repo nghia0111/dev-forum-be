@@ -17,6 +17,9 @@ export class Report extends TimestampBase {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Post' })
   post;
+
+  @Prop({ default: false })
+  isReviewed: boolean;
 }
 
 export const ReportSchema = SchemaFactory.createForClass(Report);

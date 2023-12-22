@@ -83,6 +83,10 @@ export class CommentsService {
       throw new UnauthorizedException(ValidationErrorMessages.UNAUTHORIZED);
     comment.description = commentDto.description;
     await comment.save();
+    await this.reportModel.updateMany(
+      { comment: commentId },
+      { description: comment.description },
+    );
     const postData = await this.postService.getPostData(comment.post);
     this.socketGateway.server
       .to(comment.post.toString())
@@ -105,11 +109,34 @@ export class CommentsService {
       _user.role != UserRole.ADMIN
     )
       throw new UnauthorizedException(ValidationErrorMessages.UNAUTHORIZED);
-    await this.reportModel.updateMany(
-      { comment: comment._id.toString() },
-      { comment: undefined },
-    );
-    await this.commentModel.deleteMany({ parent: comment._id.toString() });
+    // update report when comment is deleted
+    if (user.userId == comment.author.toString()) {
+      await Promise.all([
+        this.reportModel.deleteMany({
+          comment: commentId,
+          isReviewed: false,
+        }),
+        this.reportModel.updateMany(
+          {
+            comment: commentId,
+            isReviewed: true,
+          },
+          {
+            comment: undefined,
+          },
+        ),
+      ]);
+    } else {
+      await this.reportModel.updateMany(
+        {
+          comment: commentId,
+        },
+        {
+          comment: undefined,
+        },
+      );
+    }
+    await this.commentModel.deleteMany({ parent: commentId });
     await this.commentModel.findByIdAndDelete(commentId);
 
     const postData = await this.postService.getPostData(postId);

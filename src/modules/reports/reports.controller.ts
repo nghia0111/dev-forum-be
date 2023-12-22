@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
   Req,
@@ -18,6 +18,11 @@ export class ReportsController {
   @Post()
   create(@Req() req: Request, @Body('commentId') commentId: string) {
     return this.reportsService.create(req.user, commentId);
+  }
+
+  @Put(':reportId')
+  acceptReport(@Req() req: Request, @Param('reportId') reportId: string) {
+    return this.reportsService.acceptReport(reportId);
   }
 
   @Get()

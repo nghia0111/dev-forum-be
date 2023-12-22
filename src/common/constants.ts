@@ -75,6 +75,8 @@ export enum ValidationErrorMessages {
   ADMIN_REQUIRED = 'Chỉ có quản trị viên mới được phép truy cập',
   ADMIN_UNBANNABLE = 'Không thể thay đổi trạng thái của quản trị viên',
 
+  REPORT_NOT_FOUND = 'Không tìm thấy báo cáo',
+
   USER_BANNED = 'Tài khoản của bạn đã bị khoá, vui lòng liên hệ đội ngũ phát triển để biết thêm chi tiết',
 }
 

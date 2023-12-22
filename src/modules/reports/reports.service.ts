@@ -26,9 +26,18 @@ export class ReportsService {
     });
   }
 
+  async acceptReport(reportId: string) {
+    const report = await this.reportModel.findById(reportId);
+    if (!report)
+      throw new NotFoundException(ValidationErrorMessages.REPORT_NOT_FOUND);
+    report.isReviewed = true;
+    await report.save();
+  }
+
   async findAll(user: any) {
     const _user = await this.userModel.findById(user.userId);
-    if(!_user || _user.role != UserRole.ADMIN) throw new UnauthorizedException(ValidationErrorMessages.ADMIN_REQUIRED)
+    if (!_user || _user.role != UserRole.ADMIN)
+      throw new UnauthorizedException(ValidationErrorMessages.ADMIN_REQUIRED);
     return await this.reportModel
       .find()
       .sort('-createdAt')
