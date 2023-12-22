@@ -42,6 +42,5 @@ export class ReportsService {
       .find()
       .sort('-createdAt')
       .populate('accuser', 'displayName avatar')
-      .populate('comment', 'description');
   }
 }
