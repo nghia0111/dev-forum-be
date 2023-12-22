@@ -11,7 +11,7 @@ export class UsersService {
   async findAll() {
     return await this.userModel
       .find({ role: UserRole.USER })
-      .select('displayName avatar email');
+      .select('displayName avatar email status');
   }
 
   async updateStatus(userId: string, user: any) {
