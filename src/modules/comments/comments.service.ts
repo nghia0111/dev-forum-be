@@ -172,7 +172,7 @@ export class CommentsService {
     const _replies = await this.commentModel
       .find({ parent: commentId })
       .sort('-createdAt')
-      .select('description author')
+      .select('description author score isAccepted createdAt')
       .populate('author', 'displayName avatar')
       .lean();
 
