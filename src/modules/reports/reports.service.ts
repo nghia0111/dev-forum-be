@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserRole, ValidationErrorMessages } from 'src/common/constants';
@@ -18,12 +22,18 @@ export class ReportsService {
     const comment = await this.commentModel.findById(commentId);
     if (!comment)
       throw new NotFoundException(ValidationErrorMessages.COMMENT_NOT_FOUND);
-    await this.reportModel.create({
-      accuser: user.userId,
+
+    const existingReport = await this.reportModel.findOne({
       comment: commentId,
-      description: comment.description,
-      post: comment.post.toString(),
     });
+    if (!existingReport) {
+      await this.reportModel.create({
+        accuser: user.userId,
+        comment: commentId,
+        description: comment.description,
+        post: comment.post.toString(),
+      });
+    }
   }
 
   async acceptReport(reportId: string) {
@@ -41,6 +51,6 @@ export class ReportsService {
     return await this.reportModel
       .find()
       .sort('-createdAt')
-      .populate('accuser', 'displayName avatar')
+      .populate('accuser', 'displayName avatar');
   }
 }
