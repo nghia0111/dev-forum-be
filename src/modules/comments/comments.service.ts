@@ -122,7 +122,7 @@ export class CommentsService {
             isReviewed: true,
           },
           {
-            comment: undefined,
+            comment: null
           },
         ),
       ]);
@@ -132,7 +132,8 @@ export class CommentsService {
           comment: commentId,
         },
         {
-          comment: undefined,
+          comment: null,
+          isReviewed: true,
         },
       );
     }
@@ -155,8 +156,6 @@ export class CommentsService {
         notiData,
       );
     }
-
-    return postData;
   }
 
   async markAsBest(commentId: string, user: any) {
