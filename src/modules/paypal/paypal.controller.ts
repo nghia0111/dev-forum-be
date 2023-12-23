@@ -8,7 +8,8 @@ import {
 import { Request } from 'express';
 import { DepositDto } from './dto/deposit.dto';
 import { PaypalService } from './paypal.service';
-import { DepositValidator } from './paypal.validator';
+import { DepositValidator, WithdrawValidator } from './paypal.validator';
+import { WithdrawDto } from './dto/withdraw.dto';
 
 @Controller('paypal')
 export class PaypalController {
@@ -21,5 +22,14 @@ export class PaypalController {
     if (validateResult.error)
       throw new BadRequestException(validateResult.error.message);
     return this.paypalService.deposit(depositDto, req.user);
+  }
+
+  @Post('withdraw')
+  withdraw(@Body() withdrawDto: WithdrawDto, @Req() req: Request) {
+    const schema = WithdrawValidator;
+    const validateResult = schema.validate(withdrawDto);
+    if (validateResult.error)
+      throw new BadRequestException(validateResult.error.message);
+    return this.paypalService.acceptWithdrawRequest(withdrawDto, req.user);
   }
 }
