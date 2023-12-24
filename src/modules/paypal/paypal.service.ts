@@ -32,17 +32,17 @@ export class PaypalService {
     if (!currentUser)
       throw new NotFoundException(ValidationErrorMessages.UNAUTHENTICATED);
 
-    currentUser.balance += depositDto.amount * 24000;
+    currentUser.balance += depositDto.amount;
     await currentUser.save();
 
     await this.transactionModel.create({
       user: user.userId,
-      amount: depositDto.amount * 24000,
+      amount: depositDto.amount,
       type: TransactionTypes.DEPOSIT,
       status: TransactionStatus.SUCCEEDED,
       message: generateMessage(
         TransactionTypes.DEPOSIT,
-        depositDto.amount * 24000,
+        depositDto.amount,
       ),
     });
   }
@@ -92,7 +92,7 @@ export class PaypalService {
             {
               recipient_type: 'EMAIL',
               amount: {
-                value: existingWithdraw.amount / 24000,
+                value: (existingWithdraw.amount / 24000).toFixed(2),
                 currency: 'USD',
               },
               note: 'Thanks for your patronage!',
@@ -135,7 +135,7 @@ export class PaypalService {
     await this.transactionModel.create({
       user: user.userId,
       amount: withdrawDto.amount,
-      type: TransactionStatus.PENDING,
+      type: TransactionTypes.WITHDRAW,
       withdraw: withdraw._id.toString(),
       status: TransactionStatus.PENDING,
       message: generateMessage(TransactionTypes.WITHDRAW, withdrawDto.amount, withdrawDto.paypalEmail)
