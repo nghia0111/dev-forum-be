@@ -14,7 +14,7 @@ export class User {
     raw({
       secure_url: { type: String },
       public_id: { type: String },
-    }),
+    })
   )
   avatar: Record<string, any>;
 

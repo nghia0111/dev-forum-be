@@ -118,13 +118,16 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     senderId: string,
     receiverId: string,
     type: string,
+    message: string,
     extraData: any,
+    senderAvatar: string
   ) {
     let notification = await this.notificationModel.create({
       sender: senderId,
       receiver: receiverId,
       type: type,
       hasSeen: false,
+      message: message,
       extraData: extraData,
     });
     const leanedNoti = notification.toObject();
@@ -132,8 +135,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const sender = await this.userModel.findById(senderId);
     if (notifiedSocket) {
       notifiedSocket.emit('notification', {
-        senderName: sender.displayName,
-        senderAvatar: sender.avatar,
+        senderAvatar: senderAvatar,
         ...leanedNoti,
       });
     }

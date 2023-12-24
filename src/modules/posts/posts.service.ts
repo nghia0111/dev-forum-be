@@ -2,15 +2,16 @@ import {
   Injectable,
   NotAcceptableException,
   NotFoundException,
-  UnauthorizedException
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as jwt from 'jsonwebtoken';
 import { Model } from 'mongoose';
 import {
   TopicTypes,
+  TransactionStatus,
   ValidationErrorMessages,
-  VoteParentTypes
+  VoteParentTypes,
 } from 'src/common/constants';
 import { Comment } from 'src/schemas/comments.schema';
 import { Notification } from 'src/schemas/notifications.schema';
@@ -34,11 +35,19 @@ export class PostsService {
     private notificationModel: Model<Notification>,
   ) {}
   async create(createPostDto: PostDto, user: Record<string, any>) {
+    const _user = await this.userModel.findById(user.userId);
     const tags = createPostDto.tags;
     for (let i = 0; i < tags.length; i++) {
       const tag = await this.tagModel.findById(tags[i]);
       if (!tag)
         throw new NotFoundException(ValidationErrorMessages.TAG_NOT_FOUND);
+    }
+    if (createPostDto.bounty) {
+      if (createPostDto.bounty > _user.balance) {
+        throw new NotAcceptableException(ValidationErrorMessages.BOUNTY_MAX);
+      }
+      _user.balance -= createPostDto.bounty;
+      await _user.save();
     }
     await this.postModel.create({ author: user.userId, ...createPostDto });
     return await this.postModel.find({ author: user.userId }).populate('tags');
@@ -52,10 +61,9 @@ export class PostsService {
       .populate('author', 'avatar displayName')
       .lean();
 
-    
     let decoded = undefined;
     let currentUser = undefined;
-    if(auth){
+    if (auth) {
       const token = auth.split(' ')[1];
       try {
         decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -63,7 +71,7 @@ export class PostsService {
         decoded = undefined;
       }
     }
-    
+
     if (decoded) currentUser = await this.userModel.findById(decoded.sub);
     if (isMyPosts === 'true') {
       if (!currentUser) throw new UnauthorizedException();
@@ -167,6 +175,14 @@ export class PostsService {
       throw new UnauthorizedException(
         ValidationErrorMessages.UPDATE_UNAUTHORIZATION,
       );
+    const _user = await this.userModel.findById(user.userId);
+    if (updatePostDto.bounty) {
+      if (updatePostDto.bounty > _user.balance + post.bounty) {
+        throw new NotAcceptableException(ValidationErrorMessages.BOUNTY_MAX);
+      }
+      _user.balance = _user.balance + post.bounty - updatePostDto.bounty;
+      await _user.save();
+    }
     post.title = updatePostDto.title;
     post.description = updatePostDto.description;
     post.tags = updatePostDto.tags;
@@ -176,17 +192,27 @@ export class PostsService {
     return;
   }
 
-  async remove(id: string) {
+  async remove(id: string, user: any) {
     const post = await this.postModel.findById(id);
     if (!post)
       throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
     const existingTransaction = await this.transactionModel.findOne({
       post: id,
+      status: {$ne: TransactionStatus.CANCELLED}
     });
     if (existingTransaction)
       throw new NotAcceptableException(
         ValidationErrorMessages.POST_DELETE_CONFLICT,
       );
+    if (post.author != user.userId)
+      throw new UnauthorizedException(
+        ValidationErrorMessages.UNAUTHORIZED,
+      );
+    const _user = await this.userModel.findById(user.userId);
+    if (post.bounty) {
+      _user.balance = _user.balance + post.bounty;
+      await _user.save();
+    }
     await this.commentModel.deleteMany({ post: id });
     await this.postModel.findByIdAndDelete(id);
     return;
@@ -244,7 +270,9 @@ export class PostsService {
             VoteParentTypes.COMMENT,
             userId,
           ),
-          replies: await this.commentModel.countDocuments({parent: comment._id})
+          replies: await this.commentModel.countDocuments({
+            parent: comment._id,
+          }),
         };
       }),
     );
@@ -273,7 +301,8 @@ export class PostsService {
     const posts = await this.postModel
       .find({ _id: { $in: existingUser.savedPosts } })
       .populate('tags')
-      .populate('author', 'displayName avatar').lean();
+      .populate('author', 'displayName avatar')
+      .lean();
     const newPosts = await Promise.all(
       posts.map(async (post) => {
         const answerCount = await this.commentModel.countDocuments({
@@ -294,11 +323,11 @@ export class PostsService {
     const existingUser = await this.userModel.findById(user.userId);
     if (!existingUser)
       throw new UnauthorizedException(ValidationErrorMessages.UNAUTHENTICATED);
-    const post = await this.postModel
-      .findById(postId);
+    const post = await this.postModel.findById(postId);
     if (!post)
       throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
-    if(existingUser.savedPosts.includes(postId)) existingUser.savedPosts.pull(postId);
+    if (existingUser.savedPosts.includes(postId))
+      existingUser.savedPosts.pull(postId);
     else existingUser.savedPosts.push(postId);
     await existingUser.save();
   }

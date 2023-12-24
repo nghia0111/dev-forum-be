@@ -73,13 +73,13 @@ export class PaypalService {
           body: formData.toString(),
         },
       );
-      const token = await tokenResponse.json().access_token;
+      const tokenObject = await tokenResponse.json();
 
       await fetch('https://api-m.sandbox.paypal.com/v1/payments/payouts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${tokenObject.access_token}`,
         },
         body: JSON.stringify({
           sender_batch_header: {

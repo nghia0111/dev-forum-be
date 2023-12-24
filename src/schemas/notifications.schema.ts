@@ -17,6 +17,9 @@ export class Notification extends TimestampBase {
   @Prop({ required: true })
   hasSeen: boolean;
 
+  @Prop()
+  message: string;
+
   // extra data for navigating when click to notification, such as meeting token, channel name, commentId, postId
   @Prop(
     raw({

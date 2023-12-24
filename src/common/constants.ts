@@ -19,6 +19,14 @@ export enum TransactionStatus {
   SUCCEEDED = 'succeeded',
 }
 
+export enum ConnectRequestStatus {
+  PENDING = 'pending',
+  CANCELLED = 'canceled',
+  PROCESSING = 'processing',
+  BLOCKING = 'blocking',
+  SUCCEEDED = 'succeeded',
+}
+
 export enum TransactionTypes {
   DEPOSIT = 'deposit',
   WITHDRAW = 'withdraw',
@@ -78,6 +86,8 @@ export enum ValidationErrorMessages {
   BOUNTY_INVALID = 'Số tiền không hợp lệ',
   BOUNTY_MIN = 'Mức thưởng tối thiểu là 10000VND',
   BOUNTY_NOT_ACCEPTABLE = 'Tiền thưởng chỉ áp dụng với bài viết sửa lỗi',
+  BOUNTY_REQUIRED = 'Chỉ được gửi yêu cầu đối với bài viết được treo thưởng',
+  BOUNTY_MAX = 'Không đủ số dư trong tài khoản',
 
   AMOUNT_MIN = 'Số tiền nạp tối thiểu là 1 USD',
   AMOUNT_INVALID = 'Số tiền rút không thể vượt quá số dư',
@@ -95,6 +105,8 @@ export enum ValidationErrorMessages {
 
   WITHDRAW_NOT_FOUND = 'Không tìm thấy yêu cầu rút tiền',
 
+  REQUEST_STATUS_INVALID = 'Trạng thái yêu cầu không hợp lệ',
+
   USER_BANNED = 'Tài khoản của bạn đã bị khoá, vui lòng liên hệ đội ngũ phát triển để biết thêm chi tiết',
 }
 
@@ -107,7 +119,9 @@ export const generateMessage = (
   paypalEmail?: string,
   partnerName?: string,
 ) => {
-  const formatedAmount = amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const formatedAmount = amount
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   switch (type) {
     case TransactionTypes.DEPOSIT:
       return `Bạn đã nạp ${formatedAmount} VND vào Dev Forum`;
@@ -117,6 +131,25 @@ export const generateMessage = (
       return `Bạn đã gửi ${formatedAmount} VND cho ${partnerName}`;
     case TransactionTypes.RECEIVE:
       return `Bạn đã nhận ${formatedAmount} VND từ ${partnerName}`;
-    default: return ''
+    default:
+      return '';
+  }
+};
+
+export const generateNotiMessage = (
+  type: NotificationTypes,
+  partnerName?: string,
+) => {
+  switch (type) {
+    case NotificationTypes.CALL:
+      return `${partnerName} đã mời bạn tham gia một cuộc họp`;
+    case NotificationTypes.COMMENT:
+      return `${partnerName} đã bình luận bài viết của bạn`;
+    case NotificationTypes.REPLY:
+      return `${partnerName} đã trả lời bình luận của bạn`;
+    case NotificationTypes.DELETE_COMMENT:
+      return `Bình luận của bạn đã bị xoá do vi phạm tiêu chuẩn cộng đồng`;
+    default:
+      return '';
   }
 };

@@ -42,7 +42,7 @@ export class PostsController {
   }
 
   @Post('save-post')
-  savePost(@Req() req: Request, @Body('postId') postId:string) {
+  savePost(@Req() req: Request, @Body('postId') postId: string) {
     return this.postsService.savePost(req.user, postId);
   }
 
@@ -67,7 +67,7 @@ export class PostsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(id);
+  remove(@Param('id') id: string, @Req() req: Request) {
+    return this.postsService.remove(id, req.user);
   }
 }

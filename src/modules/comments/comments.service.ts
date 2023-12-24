@@ -13,6 +13,8 @@ import {
   ValidationErrorMessages,
   VoteParentTypes,
   VoteTypes,
+  defaultAvatar,
+  generateNotiMessage,
 } from 'src/common/constants';
 import * as jwt from 'jsonwebtoken';
 import { Vote } from 'src/schemas/votes.schema';
@@ -65,11 +67,14 @@ export class CommentsService {
     this.socketGateway.server.to(postId).emit('updatePost', postData);
 
     const notiData = { commentId: comment._id.toString(), postSlug: postSlug };
+    const _user = await this.userModel.findById(user.userId);
     await this.socketGateway.createNotification(
       user.userId,
       receiverId,
       notiType,
+      generateNotiMessage(notiType, _user.displayName),
       notiData,
+      _user.avatar.secure_url
     );
 
     return postData;
@@ -153,7 +158,9 @@ export class CommentsService {
         user.userId,
         receiverId,
         NotificationTypes.DELETE_COMMENT,
+        generateNotiMessage(NotificationTypes.DELETE_COMMENT),
         notiData,
+        defaultAvatar
       );
     }
   }
