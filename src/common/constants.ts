@@ -13,17 +13,17 @@ export enum UserStatus {
   ACTIVE = 'active',
 }
 
-export enum WithdrawStatus {
+export enum TransactionStatus {
   PENDING = 'pending',
   CANCELLED = 'cancelled',
-  SUCCEEDED = 'succeeded'
+  SUCCEEDED = 'succeeded',
 }
 
 export enum TransactionTypes {
   DEPOSIT = 'deposit',
   WITHDRAW = 'withdraw',
   PAY = 'pay',
-  RECEIVE = 'receive'
+  RECEIVE = 'receive',
 }
 
 export enum TopicTypes {
@@ -41,7 +41,7 @@ export enum NotificationTypes {
   CALL = 'call',
   COMMENT = 'comment',
   REPLY = 'reply',
-  DELETE_COMMENT = 'delete_comment'
+  DELETE_COMMENT = 'delete_comment',
 }
 
 export enum ValidationErrorMessages {
@@ -100,3 +100,22 @@ export enum ValidationErrorMessages {
 
 export const defaultAvatar =
   'https://res.cloudinary.com/duxsgk7dr/image/upload/v1701434597/dev-forum/g81yowpmtsrxvhviao6a.jpg';
+
+export const generateMessage = (
+  type: TransactionTypes,
+  amount: number,
+  paypalEmail?: string,
+  partnerName?: string,
+) => {
+  switch (type) {
+    case TransactionTypes.DEPOSIT:
+      return `Bạn đã nạp ${amount}VND vào Dev Forum`;
+    case TransactionTypes.WITHDRAW:
+      return `Bạn đã yêu cầu rút ${amount}VND đến tài khoản Paypal ${paypalEmail}`;
+    case TransactionTypes.PAY:
+      return `Bạn đã gửi ${amount}VND cho ${partnerName}`;
+    case TransactionTypes.RECEIVE:
+      return `Bạn đã nhận ${amount}VND từ ${partnerName}`;
+    default: return ''
+  }
+};

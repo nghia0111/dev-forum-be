@@ -1,20 +1,20 @@
 import {
-    Injectable,
-    NotAcceptableException,
-    NotFoundException,
-    UnauthorizedException
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
   TransactionTypes,
   UserRole,
-    ValidationErrorMessages,
-    WithdrawStatus
+  ValidationErrorMessages,
+  TransactionStatus,
+  generateMessage,
 } from 'src/common/constants';
 import { User } from 'src/schemas/users.schema';
 import { DepositDto } from './dto/deposit.dto';
-import * as paypal from './paypal.config';
 import { WithdrawDto } from './dto/withdraw.dto';
 import { Withdraw } from 'src/schemas/withdraws.schema';
 import { Transaction } from 'src/schemas/transactions.schema';
@@ -39,6 +39,11 @@ export class PaypalService {
       user: user.userId,
       amount: depositDto.amount * 24000,
       type: TransactionTypes.DEPOSIT,
+      status: TransactionStatus.SUCCEEDED,
+      message: generateMessage(
+        TransactionTypes.DEPOSIT,
+        depositDto.amount * 24000,
+      ),
     });
   }
 
@@ -97,13 +102,13 @@ export class PaypalService {
           ],
         }),
       });
-      existingWithdraw.status = WithdrawStatus.SUCCEEDED;
+      existingWithdraw.status = TransactionStatus.SUCCEEDED;
       await existingWithdraw.save();
-      await this.transactionModel.create({
-        user: existingWithdraw.requester,
-        amount: existingWithdraw.amount,
-        type: TransactionTypes.WITHDRAW,
-      });
+      const existingTransaction = await this.transactionModel.findOne({withdraw: withdrawId});
+      if(existingTransaction){
+        existingTransaction.status = TransactionStatus.SUCCEEDED
+        await existingTransaction.save();
+      }
     } catch (error) {
       console.error(
         'P2P Transfer Error:',
@@ -122,11 +127,19 @@ export class PaypalService {
       throw new NotAcceptableException(ValidationErrorMessages.AMOUNT_INVALID);
     currentUser.balance -= withdrawDto.amount;
     await currentUser.save();
-    await this.withdrawModel.create({
+    const withdraw = await this.withdrawModel.create({
       requester: user.userId,
       paypalEmail: withdrawDto.paypalEmail,
       amount: withdrawDto.amount,
     });
+    await this.transactionModel.create({
+      user: user.userId,
+      amount: withdrawDto.amount,
+      type: TransactionStatus.PENDING,
+      withdraw: withdraw._id.toString(),
+      status: TransactionStatus.PENDING,
+      message: generateMessage(TransactionTypes.WITHDRAW, withdrawDto.amount, withdrawDto.paypalEmail)
+    })
   }
 
   async cancelWithdrawRequest(withdrawId: string, user: any) {
@@ -141,8 +154,13 @@ export class PaypalService {
 
     currentUser.balance += existingWithdraw.amount;
     await currentUser.save();
-    existingWithdraw.status = WithdrawStatus.CANCELLED;
+    existingWithdraw.status = TransactionStatus.CANCELLED;
     await existingWithdraw.save();
+    const existingTransaction = await this.transactionModel.findOne({withdraw: withdrawId});
+    if(existingTransaction){
+      existingTransaction.status = TransactionStatus.CANCELLED;
+      await existingTransaction.save();
+    }
   }
 
   async getWithdrawRequests(user: any) {
@@ -158,7 +176,6 @@ export class PaypalService {
     const currentUser = await this.userModel.findById(user.userId);
     if (!currentUser)
       throw new NotFoundException(ValidationErrorMessages.UNAUTHENTICATED);
-    return await this.transactionModel
-      .find({user: user.userId});
+    return await this.transactionModel.find({ user: user.userId });
   }
 }
