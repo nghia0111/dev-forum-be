@@ -107,15 +107,16 @@ export const generateMessage = (
   paypalEmail?: string,
   partnerName?: string,
 ) => {
+  const formatedAmount = amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   switch (type) {
     case TransactionTypes.DEPOSIT:
-      return `Bạn đã nạp ${amount}VND vào Dev Forum`;
+      return `Bạn đã nạp ${formatedAmount} VND vào Dev Forum`;
     case TransactionTypes.WITHDRAW:
-      return `Bạn đã yêu cầu rút ${amount}VND đến tài khoản Paypal ${paypalEmail}`;
+      return `Bạn đã yêu cầu rút ${formatedAmount} VND đến tài khoản Paypal ${paypalEmail}`;
     case TransactionTypes.PAY:
-      return `Bạn đã gửi ${amount}VND cho ${partnerName}`;
+      return `Bạn đã gửi ${formatedAmount} VND cho ${partnerName}`;
     case TransactionTypes.RECEIVE:
-      return `Bạn đã nhận ${amount}VND từ ${partnerName}`;
+      return `Bạn đã nhận ${formatedAmount} VND từ ${partnerName}`;
     default: return ''
   }
 };
