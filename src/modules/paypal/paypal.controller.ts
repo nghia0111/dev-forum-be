@@ -2,7 +2,10 @@ import {
     BadRequestException,
     Body,
     Controller,
+    Param,
     Post,
+    Get,
+    Put,
     Req
 } from '@nestjs/common';
 import { Request } from 'express';
@@ -24,12 +27,32 @@ export class PaypalController {
     return this.paypalService.deposit(depositDto, req.user);
   }
 
-  @Post('withdraw')
-  withdraw(@Body() withdrawDto: WithdrawDto, @Req() req: Request) {
+  @Get('withdraws')
+  getWithdrawRequests(@Req() req: Request) {
+    return this.paypalService.getWithdrawRequests(req.user);
+  }
+
+  @Get('transactions')
+  getTransactions(@Req() req: Request) {
+    return this.paypalService.getTransactions(req.user);
+  }
+
+  @Put('withdraws/:withdrawId/accept')
+  acceptWithdraw(@Param('withdrawId') withdrawId: string, @Req() req: Request) {
+    return this.paypalService.acceptWithdrawRequest(withdrawId, req.user);
+  }
+
+  @Put('withdraws/:withdrawId/cancel')
+  cancelWithdraw(@Param('withdrawId') withdrawId: string, @Req() req: Request) {
+    return this.paypalService.cancelWithdrawRequest(withdrawId, req.user);
+  }
+
+  @Post('request-withdraw')
+  createWithdraw(@Body() withdrawDto: WithdrawDto, @Req() req: Request) {
     const schema = WithdrawValidator;
     const validateResult = schema.validate(withdrawDto);
     if (validateResult.error)
       throw new BadRequestException(validateResult.error.message);
-    return this.paypalService.acceptWithdrawRequest(withdrawDto, req.user);
+    return this.paypalService.createWithdraw(withdrawDto, req.user);
   }
 }

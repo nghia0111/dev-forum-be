@@ -6,16 +6,16 @@ import { User } from './users.schema';
 @Schema()
 export class Vote {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  user: User;
+  user;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, refPath: 'parent_type' })
   parent;
 
   @Prop({ type: String, enum: VoteParentTypes, required: true })
-  parentType: string;
+  parentType;
 
-  @Prop({ type: String, enum: VoteTypes, required: true })
-  voteType: number;
+  @Prop({ type: Number, enum: VoteTypes, required: true })
+  voteType;
 }
 
 export const VoteSchema = SchemaFactory.createForClass(Vote);

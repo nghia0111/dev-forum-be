@@ -20,8 +20,7 @@ export const WithdrawValidator = Joi.object({
       'any.required': ValidationErrorMessages.EMAIL_REQUIRE,
       'string.empty': ValidationErrorMessages.EMAIL_REQUIRE,
     }),
-  amount: Joi.number().integer().min(1).messages({
-    'number.integer': ValidationErrorMessages.AMOUNT_INVALID,
+  amount: Joi.number().min(1).messages({
     'number.min': ValidationErrorMessages.AMOUNT_MIN,
   }),
 });

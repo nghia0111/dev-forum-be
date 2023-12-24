@@ -13,6 +13,19 @@ export enum UserStatus {
   ACTIVE = 'active',
 }
 
+export enum WithdrawStatus {
+  PENDING = 'pending',
+  CANCELLED = 'cancelled',
+  SUCCEEDED = 'succeeded'
+}
+
+export enum TransactionTypes {
+  DEPOSIT = 'deposit',
+  WITHDRAW = 'withdraw',
+  PAY = 'pay',
+  RECEIVE = 'receive'
+}
+
 export enum TopicTypes {
   DISCUSS = 'discuss',
   NEWS = 'news',
@@ -66,8 +79,8 @@ export enum ValidationErrorMessages {
   BOUNTY_MIN = 'Mức thưởng tối thiểu là 10000VND',
   BOUNTY_NOT_ACCEPTABLE = 'Tiền thưởng chỉ áp dụng với bài viết sửa lỗi',
 
-  AMOUNT_INVALID = 'Số tiền không hợp lệ',
   AMOUNT_MIN = 'Số tiền nạp tối thiểu là 1 USD',
+  AMOUNT_INVALID = 'Số tiền rút không thể vượt quá số dư',
 
   COMMENT_NOT_EMPTY = 'Bình luận không được để trống',
   COMMENT_NOT_FOUND = 'Không tìm thấy bình luận',
@@ -79,6 +92,8 @@ export enum ValidationErrorMessages {
   ADMIN_UNBANNABLE = 'Không thể thay đổi trạng thái của quản trị viên',
 
   REPORT_NOT_FOUND = 'Không tìm thấy báo cáo',
+
+  WITHDRAW_NOT_FOUND = 'Không tìm thấy yêu cầu rút tiền',
 
   USER_BANNED = 'Tài khoản của bạn đã bị khoá, vui lòng liên hệ đội ngũ phát triển để biết thêm chi tiết',
 }
