@@ -15,7 +15,7 @@ export enum UserStatus {
 
 export enum TransactionStatus {
   PENDING = 'pending',
-  CANCELLED = 'cancelled',
+  CANCELLED = 'canceled',
   SUCCEEDED = 'succeeded',
 }
 
