@@ -28,7 +28,7 @@ export class Transaction extends TimestampBase {
   @Prop({
     type: String,
     enum: TransactionStatus,
-    required: true,
+    default: TransactionStatus.PENDING,
   })
   status;
 }

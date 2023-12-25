@@ -21,9 +21,11 @@ import { CommentsModule } from './modules/comments/comments.module';
 import { UsersModule } from './modules/users/users.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { PaypalModule } from './modules/paypal/paypal.module';
+import { ConnectRequestsModule } from './modules/connect-requests/connect-requests.module';
 
 @Module({
   imports: [
+    ConnectRequestsModule,
     PaypalModule,
     ReportsModule,
     UsersModule,

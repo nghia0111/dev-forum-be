@@ -44,7 +44,11 @@ export class ConnectRequestsService {
       requester: user.userId,
       post: postId,
     });
-    if (existingRequest.status != ConnectRequestStatus.CANCELLED) return;
+    if (
+      existingRequest &&
+      existingRequest.status != ConnectRequestStatus.CANCELED
+    )
+      return;
     await this.connectRequestModel.create({
       requester: user.userId,
       receiver: post.author,
@@ -62,6 +66,13 @@ export class ConnectRequestsService {
     if (existingRequest.status != ConnectRequestStatus.PENDING)
       throw new NotAcceptableException(
         ValidationErrorMessages.REQUEST_STATUS_INVALID,
+      );
+    const processingRequest = await this.connectRequestModel.findOne({
+      status: ConnectRequestStatus.PROCESSING,
+    });
+    if (processingRequest)
+      throw new NotAcceptableException(
+        ValidationErrorMessages.REQUEST_CONFLICT,
       );
     if (user.userId != existingRequest.receiver._id.toString())
       throw new UnauthorizedException(ValidationErrorMessages.UNAUTHORIZED);
@@ -101,6 +112,32 @@ export class ConnectRequestsService {
     ]);
   }
 
+  async cancelRequest(requestId: string, user: any) {
+    const existingRequest = await this.connectRequestModel.findById(requestId);
+    if (existingRequest.status != ConnectRequestStatus.PROCESSING)
+      throw new NotAcceptableException(
+        ValidationErrorMessages.REQUEST_STATUS_INVALID,
+      );
+    if (user.userId != existingRequest.receiver.toString())
+      throw new UnauthorizedException(ValidationErrorMessages.UNAUTHORIZED);
+    existingRequest.status = ConnectRequestStatus.CANCELED;
+    await existingRequest.save();
+
+    await Promise.all([
+      this.transactionModel.updateMany(
+        {
+          post: existingRequest.post,
+          status: TransactionStatus.PENDING,
+        },
+        { status: TransactionStatus.CANCELED },
+      ),
+      this.connectRequestModel.updateMany(
+        { post: existingRequest.post, status: ConnectRequestStatus.BLOCKING },
+        { status: ConnectRequestStatus.PENDING },
+      ),
+    ]);
+  }
+
   async recognizeRequest(requestId: string, user: any) {
     const existingRequest = await this.connectRequestModel
       .findById(requestId)
@@ -125,7 +162,7 @@ export class ConnectRequestsService {
 
   async findAll(user: any) {
     return await this.connectRequestModel
-      .find({receiver: user.userId})
+      .find({ receiver: user.userId })
       .sort('-createdAt')
       .populate('requester', 'displayName avatar')
       .populate('post', 'title');

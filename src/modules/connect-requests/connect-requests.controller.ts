@@ -28,6 +28,11 @@ export class ConnectRequestsController {
     return this.connectRequestsService.acceptRequest(requestId, req.user);
   }
 
+  @Put(':requestId/cancel')
+  cancelRequest(@Param('requestId') requestId: string, @Req() req: Request) {
+    return this.connectRequestsService.cancelRequest(requestId, req.user);
+  }
+
   @Put(':requestId/mark-as-succeeded')
   recognizeRequest(@Param('requestId') requestId: string, @Req() req: Request) {
     return this.connectRequestsService.recognizeRequest(requestId, req.user);

@@ -15,13 +15,13 @@ export enum UserStatus {
 
 export enum TransactionStatus {
   PENDING = 'pending',
-  CANCELLED = 'canceled',
+  CANCELED = 'canceled',
   SUCCEEDED = 'succeeded',
 }
 
 export enum ConnectRequestStatus {
   PENDING = 'pending',
-  CANCELLED = 'canceled',
+  CANCELED = 'canceled',
   PROCESSING = 'processing',
   BLOCKING = 'blocking',
   SUCCEEDED = 'succeeded',
@@ -106,6 +106,7 @@ export enum ValidationErrorMessages {
   WITHDRAW_NOT_FOUND = 'Không tìm thấy yêu cầu rút tiền',
 
   REQUEST_STATUS_INVALID = 'Trạng thái yêu cầu không hợp lệ',
+  REQUEST_CONFLICT = 'Vẫn còn yêu cầu đang được xử lý',
 
   USER_BANNED = 'Tài khoản của bạn đã bị khoá, vui lòng liên hệ đội ngũ phát triển để biết thêm chi tiết',
 }
