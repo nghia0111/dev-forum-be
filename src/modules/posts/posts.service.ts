@@ -198,7 +198,7 @@ export class PostsService {
       throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
     const existingTransaction = await this.transactionModel.findOne({
       post: id,
-      status: {$ne: TransactionStatus.CANCELLED}
+      status: {$ne: TransactionStatus.CANCELED}
     });
     if (existingTransaction)
       throw new NotAcceptableException(

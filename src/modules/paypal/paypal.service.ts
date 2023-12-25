@@ -154,11 +154,11 @@ export class PaypalService {
 
     currentUser.balance += existingWithdraw.amount;
     await currentUser.save();
-    existingWithdraw.status = TransactionStatus.CANCELLED;
+    existingWithdraw.status = TransactionStatus.CANCELED;
     await existingWithdraw.save();
     const existingTransaction = await this.transactionModel.findOne({withdraw: withdrawId});
     if(existingTransaction){
-      existingTransaction.status = TransactionStatus.CANCELLED;
+      existingTransaction.status = TransactionStatus.CANCELED;
       await existingTransaction.save();
     }
   }
