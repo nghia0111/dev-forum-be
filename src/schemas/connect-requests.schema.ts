@@ -23,6 +23,13 @@ export class ConnectRequest extends TimestampBase {
     default: ConnectRequestStatus.PENDING,
   })
   status;
+
+  //rating infor for succeeded request
+  @Prop()
+  ratingScore: number;
+
+  @Prop()
+  ratingDescription: string;
 }
 
 export const ConnectRequestSchema = SchemaFactory.createForClass(ConnectRequest);

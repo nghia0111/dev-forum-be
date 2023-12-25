@@ -54,5 +54,8 @@ export class RatingsService {
       description,
       score
     });
+    existingRequest.ratingScore = score;
+    existingRequest.ratingDescription = description;
+    await existingRequest.save();
   }
 }
