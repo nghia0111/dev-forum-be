@@ -9,12 +9,14 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { Tag, TagSchema } from 'src/schemas/tags.schema';
 import { FirebaseModule } from '../firebase/firebase.module';
+import { Rating, RatingSchema } from 'src/schemas/ratings.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Tag.name, schema: TagSchema },
+      { name: Rating.name, schema: RatingSchema },
     ]),
     PassportModule,
     FirebaseModule,

@@ -22,12 +22,14 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Tag } from 'src/schemas/tags.schema';
 import { FirebaseService } from '../firebase/firebase.service';
+import { Rating } from 'src/schemas/ratings.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Tag.name) private tagModel: Model<Tag>,
+    @InjectModel(Rating.name) private ratingModel: Model<Rating>,
     private jwtService: JwtService,
     @Inject(FirebaseService) private readonly firebaseService: FirebaseService,
   ) {}
@@ -105,15 +107,19 @@ export class AuthService {
     await existingUser.save();
   }
 
-  async getMe(user: any) {
+  async getProfile(userId) {
     const existingUser = await this.userModel
-      .findById(user.userId)
+      .findById(userId)
       .populate('favorites')
       .lean();
     if (!existingUser)
       throw new NotFoundException(ValidationErrorMessages.USER_NOT_FOUND);
     const { password, ...result } = existingUser;
-    return result;
+    const ratings = await this.ratingModel.find({reviewee: userId}).populate('reviewer', 'displayName avatar').select('-reviewee -request');
+    const totalScore = ratings.reduce((accumulator, rating) => {
+      return accumulator + rating.score;
+    }, 0);
+    return {...result, ratingCount: ratings.length, average: (totalScore/ratings.length).toFixed(1), ratings};
   }
 
   async updateProfile(updateProfileDto: UpdateProfileDto, user: any) {
@@ -132,7 +138,8 @@ export class AuthService {
       }),
     );
     existingUser.displayName = updateProfileDto.displayName;
-    if (updateProfileDto.avatar) existingUser.avatar = {...updateProfileDto.avatar};
+    if (updateProfileDto.avatar)
+      existingUser.avatar = { ...updateProfileDto.avatar };
     existingUser.description = updateProfileDto.description;
     existingUser.favorites = updateProfileDto.favorites;
     await existingUser.save();

@@ -1,34 +1,26 @@
-// import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-// import { RatingsService } from './ratings.service';
-// import { CreateRatingDto } from './dto/create-rating.dto';
-// import { UpdateRatingDto } from './dto/update-rating.dto';
+import {
+  Controller,
+  Post,
+  Body,
+  Req,
+  BadRequestException,
+} from '@nestjs/common';
+import { RatingsService } from './ratings.service';
+import { RatingDto } from './dto/rating.dto';
+import { Request } from 'express';
+import { RatingValidator } from './ratings.validator';
 
-// @Controller('ratings')
-// export class RatingsController {
-//   constructor(private readonly ratingsService: RatingsService) {}
+@Controller('ratings')
+export class RatingsController {
+  constructor(private readonly ratingsService: RatingsService) {}
 
-//   @Post()
-//   create(@Body() createRatingDto: CreateRatingDto) {
-//     return this.ratingsService.create(createRatingDto);
-//   }
-
-//   @Get()
-//   findAll() {
-//     return this.ratingsService.findAll();
-//   }
-
-//   @Get(':id')
-//   findOne(@Param('id') id: string) {
-//     return this.ratingsService.findOne(+id);
-//   }
-
-//   @Patch(':id')
-//   update(@Param('id') id: string, @Body() updateRatingDto: UpdateRatingDto) {
-//     return this.ratingsService.update(+id, updateRatingDto);
-//   }
-
-//   @Delete(':id')
-//   remove(@Param('id') id: string) {
-//     return this.ratingsService.remove(+id);
-//   }
-// }
+  @Post()
+  create(@Req() req: Request, @Body() ratingDto: RatingDto) {
+    const {requestId, ...res} = ratingDto;
+    const schema = RatingValidator;
+    const validateResult = schema.validate(res);
+    if (validateResult.error)
+      throw new BadRequestException(validateResult.error.message);
+    return this.ratingsService.create(ratingDto, req.user);
+  }
+}

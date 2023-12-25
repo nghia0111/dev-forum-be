@@ -7,6 +7,7 @@ import {
   Post,
   Request,
   UseGuards,
+  Param,
 } from '@nestjs/common';
 import { Public } from 'src/common/decorators';
 import { AuthService } from './auth.service';
@@ -51,9 +52,10 @@ export class AuthController {
     return this.authService.changePassword(password, req.user);
   }
 
-  @Get('profile')
-  getMe(@Request() req) {
-    return this.authService.getMe(req.user);
+  @Public()
+  @Get('profile/:userId')
+  getProfile(@Param('userId') userId: string) {
+    return this.authService.getProfile(userId);
   }
 
   @HttpCode(200)

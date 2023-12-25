@@ -22,9 +22,11 @@ import { UsersModule } from './modules/users/users.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { PaypalModule } from './modules/paypal/paypal.module';
 import { ConnectRequestsModule } from './modules/connect-requests/connect-requests.module';
+import { RatingsModule } from './modules/ratings/ratings.module';
 
 @Module({
   imports: [
+    RatingsModule,
     ConnectRequestsModule,
     PaypalModule,
     ReportsModule,

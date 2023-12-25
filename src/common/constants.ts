@@ -109,6 +109,10 @@ export enum ValidationErrorMessages {
   REQUEST_CONFLICT = 'Vẫn còn yêu cầu đang được xử lý',
 
   USER_BANNED = 'Tài khoản của bạn đã bị khoá, vui lòng liên hệ đội ngũ phát triển để biết thêm chi tiết',
+
+  ID_INVALID = 'Id không hợp lệ',
+
+  SCORE_INVALID = 'Điểm đánh giá phải từ 1 sao đến 5 sao',
 }
 
 export const defaultAvatar =
