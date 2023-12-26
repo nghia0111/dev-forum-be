@@ -10,12 +10,16 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { Tag, TagSchema } from 'src/schemas/tags.schema';
 import { FirebaseModule } from '../firebase/firebase.module';
 import { Rating, RatingSchema } from 'src/schemas/ratings.schema';
+import { Comment, CommentSchema } from 'src/schemas/comments.schema';
+import { Post, PostSchema } from 'src/schemas/posts.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
+      { name: Comment.name, schema: CommentSchema },
       { name: Tag.name, schema: TagSchema },
+      { name: Post.name, schema: PostSchema },
       { name: Rating.name, schema: RatingSchema },
     ]),
     PassportModule,

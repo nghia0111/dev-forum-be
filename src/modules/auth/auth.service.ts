@@ -23,12 +23,16 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Tag } from 'src/schemas/tags.schema';
 import { FirebaseService } from '../firebase/firebase.service';
 import { Rating } from 'src/schemas/ratings.schema';
+import { Comment } from 'src/schemas/comments.schema';
+import { Post } from 'src/schemas/posts.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Comment.name) private commentModel: Model<Comment>,
     @InjectModel(Tag.name) private tagModel: Model<Tag>,
+    @InjectModel(Post.name) private postModel: Model<Post>,
     @InjectModel(Rating.name) private ratingModel: Model<Rating>,
     private jwtService: JwtService,
     @Inject(FirebaseService) private readonly firebaseService: FirebaseService,
@@ -115,11 +119,29 @@ export class AuthService {
     if (!existingUser)
       throw new NotFoundException(ValidationErrorMessages.USER_NOT_FOUND);
     const { password, ...result } = existingUser;
-    const ratings = await this.ratingModel.find({reviewee: userId}).populate('reviewer', 'displayName avatar').select('-reviewee -request');
+    const ratings = await this.ratingModel
+      .find({ reviewee: userId })
+      .populate('reviewer', 'displayName avatar')
+      .select('-reviewee -request');
     const totalScore = ratings.reduce((accumulator, rating) => {
       return accumulator + rating.score;
     }, 0);
-    return {...result, ratingCount: ratings.length, average: (totalScore/ratings.length).toFixed(1), ratings};
+    const answerCount = await this.commentModel.countDocuments({
+      author: userId,
+      parent: undefined,
+    });
+    const posts = await this.postModel.find({
+      author: userId,
+    });
+    return {
+      ...result,
+      ratingCount: ratings.length,
+      answerCount,
+     postCount: posts.length,
+      average: (totalScore / ratings.length).toFixed(1),
+      ratings,
+     posts,
+    };
   }
 
   async updateProfile(updateProfileDto: UpdateProfileDto, user: any) {
