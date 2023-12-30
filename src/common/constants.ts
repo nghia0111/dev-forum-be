@@ -103,6 +103,8 @@ export enum ValidationErrorMessages {
 
   REPORT_NOT_FOUND = 'Không tìm thấy báo cáo',
 
+  NOTI_NOT_FOUND = 'Không tìm thấy thông báo',
+
   WITHDRAW_NOT_FOUND = 'Không tìm thấy yêu cầu rút tiền',
 
   REQUEST_STATUS_INVALID = 'Trạng thái yêu cầu không hợp lệ',

@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { VoteParentTypes, VoteTypes } from 'src/common/constants';
-import { User } from './users.schema';
 
 @Schema()
 export class Vote {
