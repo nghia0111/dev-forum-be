@@ -116,7 +116,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async createNotification(
     senderId: string,
-    receiverId: string,
+    receiverId: any,
     type: string,
     message: string,
     extraData: any,
@@ -131,8 +131,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
       extraData: extraData,
     });
     const leanedNoti = notification.toObject();
-    const notifiedSocket = this.connectedClients.get(receiverId);
-    const sender = await this.userModel.findById(senderId);
+    const notifiedSocket = this.connectedClients.get(receiverId.toString());
     if (notifiedSocket) {
       notifiedSocket.emit('notification', {
         senderAvatar: senderAvatar,
