@@ -16,6 +16,7 @@ import { Model } from 'mongoose';
 import {
   NotificationTypes,
   ValidationErrorMessages,
+  generateNotiMessage,
 } from 'src/common/constants';
 import { Comment } from 'src/schemas/comments.schema';
 import { CommentValidator } from '../comments/comments.validator';
@@ -96,18 +97,18 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
     socket.emit('generateToken', tokenData);
     const sender = await this.userModel.findById(socket.data.userId);
-    const guest = this.connectedClients.get(data.guestId);
+    const guest = this.connectedClients.get(data.guestId.toString());
     let notification = await this.notificationModel.create({
       sender: sender._id,
       receiver: data.guestId,
       type: NotificationTypes.CALL,
       hasSeen: false,
+      message: generateNotiMessage(NotificationTypes.CALL, sender.displayName),
       extraData: { ...tokenData },
     });
     const leanedNoti = notification.toObject();
     if (guest) {
       guest.emit('notification', {
-        senderName: sender.displayName,
         senderAvatar: sender.avatar,
         ...leanedNoti,
       });
