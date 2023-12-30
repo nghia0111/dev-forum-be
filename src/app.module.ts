@@ -9,7 +9,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { UploadModule } from './modules/upload/upload.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { TagsModule } from './modules/tags/tags.module';
-import { SocketGateway } from './modules/socket/socket.gateway';
+// import { SocketGateway } from './modules/socket/socket.gateway';
 import { Post, PostSchema } from './schemas/posts.schema';
 import { Comment, CommentSchema } from './schemas/comments.schema';
 import { VotesModule } from './modules/votes/votes.module';
@@ -23,6 +23,7 @@ import { ReportsModule } from './modules/reports/reports.module';
 import { PaypalModule } from './modules/paypal/paypal.module';
 import { ConnectRequestsModule } from './modules/connect-requests/connect-requests.module';
 import { RatingsModule } from './modules/ratings/ratings.module';
+import { SocketModule } from './modules/socket/socket.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { RatingsModule } from './modules/ratings/ratings.module';
     PostsModule,
     TagsModule,
     AgoraModule,
+    SocketModule,
     CommentsModule,
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     MongooseModule.forRoot(
@@ -53,7 +55,6 @@ import { RatingsModule } from './modules/ratings/ratings.module';
   controllers: [AppController],
   providers: [
     AppService,
-    SocketGateway,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
