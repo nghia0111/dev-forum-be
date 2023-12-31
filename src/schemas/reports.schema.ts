@@ -11,6 +11,10 @@ export class Report extends TimestampBase {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   accused;
 
+  //transaction id
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Transaction' })
+  transaction;
+
   //comment id
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' })
   comment;
@@ -25,7 +29,7 @@ export class Report extends TimestampBase {
   @Prop({
     type: String,
     enum: ReportTypes,
-    required: true
+    required: true,
   })
   type;
 

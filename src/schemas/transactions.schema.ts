@@ -11,6 +11,10 @@ export class Transaction extends TimestampBase {
   @Prop()
   amount: number;
 
+  //reference for update after admin accepts report
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  receiver;
+
   @Prop({ type: String, enum: TransactionTypes, required: true })
   type;
 

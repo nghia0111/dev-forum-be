@@ -39,6 +39,8 @@ export class ConnectRequestsService {
       throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
     if (!post.bounty)
       throw new NotAcceptableException(ValidationErrorMessages.BOUNTY_REQUIRED);
+    const existingTransaction = await this.transactionModel.findOne({post: postId, status: TransactionStatus.SUCCEEDED});
+    if(existingTransaction) throw new NotAcceptableException(ValidationErrorMessages.REQUEST_CLOSED)
 
     const existingRequest = await this.connectRequestModel.findOne({
       requester: user.userId,
@@ -83,6 +85,7 @@ export class ConnectRequestsService {
     await Promise.all([
       this.transactionModel.create({
         user: user.userId,
+        receiver: existingRequest.receiver._id.toString(),
         amount: amount,
         type: TransactionTypes.PAY,
         message: generateMessage(

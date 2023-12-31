@@ -118,6 +118,7 @@ export enum ValidationErrorMessages {
 
   REQUEST_STATUS_INVALID = 'Trạng thái yêu cầu không hợp lệ',
   REQUEST_CONFLICT = 'Vẫn còn yêu cầu đang được xử lý',
+  REQUEST_CLOSED = 'Không thể gửi yêu cầu kết nối do vấn đề đã được giải quyết',
 
   USER_BANNED = 'Tài khoản của bạn đã bị khoá, vui lòng liên hệ đội ngũ phát triển để biết thêm chi tiết',
 

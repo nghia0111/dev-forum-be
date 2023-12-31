@@ -6,7 +6,12 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ReportTypes, TransactionStatus, UserRole, ValidationErrorMessages } from 'src/common/constants';
+import {
+  ReportTypes,
+  TransactionStatus,
+  UserRole,
+  ValidationErrorMessages,
+} from 'src/common/constants';
 import { Comment } from 'src/schemas/comments.schema';
 import { Report } from 'src/schemas/reports.schema';
 import { Transaction } from 'src/schemas/transactions.schema';
@@ -35,7 +40,7 @@ export class ReportsService {
         comment: commentId,
         description: comment.description,
         post: comment.post.toString(),
-        type: ReportTypes.COMMENT
+        type: ReportTypes.COMMENT,
       });
     }
   }
@@ -64,6 +69,7 @@ export class ReportsService {
       await this.reportModel.create({
         accuser: user.userId,
         accused: transaction.post.author,
+        transaction: transaction._id.toString(),
         type: ReportTypes.USER,
       });
     }
@@ -73,6 +79,25 @@ export class ReportsService {
     const report = await this.reportModel.findById(reportId);
     if (!report)
       throw new NotFoundException(ValidationErrorMessages.REPORT_NOT_FOUND);
+
+    if (report.type == ReportTypes.USER) {
+      const accuser = await this.userModel.findById(report.accuser);
+      const transaction = await this.transactionModel.findById(
+        report.transaction,
+      );
+      accuser.balance += transaction.amount;
+      await accuser.save();
+      transaction.status = TransactionStatus.SUCCEEDED;
+      await transaction.save();
+      await this.transactionModel.findOneAndUpdate(
+        {
+          user: report.accused,
+          receiver: report.accuser,
+          post: transaction.post,
+        },
+        { status: TransactionStatus.SUCCEEDED },
+      );
+    }
     report.isReviewed = true;
     await report.save();
   }
