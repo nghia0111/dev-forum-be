@@ -81,6 +81,7 @@ export enum ValidationErrorMessages {
   DESCRIPTION_REQUIRE = 'Vui lòng điền mô tả bài viết',
   POST_NOT_FOUND = 'Không tìm thấy bài viết',
   POST_DELETE_CONFLICT = 'Không thể xoá bài viết đã tạo ra giao dịch',
+  POST_UPDATE_CONFLICT = 'Không thể cập nhật bài viết đã tạo ra giao dịch',
   UPDATE_UNAUTHORIZATION = 'Chỉ có tác giả mới có thể cập nhật bài viết',
 
   BOUNTY_INVALID = 'Số tiền không hợp lệ',

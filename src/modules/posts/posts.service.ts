@@ -175,6 +175,14 @@ export class PostsService {
       throw new UnauthorizedException(
         ValidationErrorMessages.UPDATE_UNAUTHORIZATION,
       );
+    const existingTransaction = await this.transactionModel.findOne({
+      post: id,
+      status: { $ne: TransactionStatus.CANCELED },
+    });
+    if (existingTransaction)
+      throw new NotAcceptableException(
+        ValidationErrorMessages.POST_UPDATE_CONFLICT,
+      );
     const _user = await this.userModel.findById(user.userId);
     if (updatePostDto.bounty) {
       if (updatePostDto.bounty > _user.balance + post.bounty) {
