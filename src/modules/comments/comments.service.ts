@@ -66,16 +66,21 @@ export class CommentsService {
     const postData = await this.postService.getPostData(postId);
     this.socketGateway.server.to(postId).emit('updatePost', postData);
 
-    const notiData = { commentId: comment._id.toString(), postSlug: postSlug };
-    const _user = await this.userModel.findById(user.userId);
-    await this.socketGateway.createNotification(
-      user.userId,
-      receiverId,
-      notiType,
-      generateNotiMessage(notiType, _user.displayName),
-      notiData,
-      _user.avatar.secure_url
-    );
+    if (user.userId != receiverId) {
+      const notiData = {
+        commentId: comment._id.toString(),
+        postSlug: postSlug,
+      };
+      const _user = await this.userModel.findById(user.userId);
+      await this.socketGateway.createNotification(
+        user.userId,
+        receiverId,
+        notiType,
+        generateNotiMessage(notiType, _user.displayName),
+        notiData,
+        _user.avatar.secure_url,
+      );
+    }
 
     return postData;
   }
@@ -127,7 +132,7 @@ export class CommentsService {
             isReviewed: true,
           },
           {
-            comment: null
+            comment: null,
           },
         ),
       ]);
@@ -160,7 +165,7 @@ export class CommentsService {
         NotificationTypes.DELETE_COMMENT,
         generateNotiMessage(NotificationTypes.DELETE_COMMENT),
         notiData,
-        defaultAvatar
+        defaultAvatar,
       );
     }
   }
