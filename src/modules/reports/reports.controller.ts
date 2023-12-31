@@ -15,9 +15,17 @@ import { Request } from 'express';
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
-  @Post()
-  create(@Req() req: Request, @Body('commentId') commentId: string) {
-    return this.reportsService.create(req.user, commentId);
+  @Post('comments')
+  reportComment(@Req() req: Request, @Body('commentId') commentId: string) {
+    return this.reportsService.reportComment(req.user, commentId);
+  }
+
+  @Post('users')
+  reportUser(
+    @Req() req: Request,
+    @Param('transactionId') transactionId: string,
+  ) {
+    return this.reportsService.reportUser(req.user, transactionId);
   }
 
   @Put(':reportId')
@@ -25,8 +33,13 @@ export class ReportsController {
     return this.reportsService.acceptReport(reportId);
   }
 
-  @Get()
-  findAll(@Req() req: Request) {
-    return this.reportsService.findAll(req.user);
+  @Get('comments')
+  findCommentReports(@Req() req: Request) {
+    return this.reportsService.findCommentReports(req.user);
+  }
+
+  @Get('users')
+  findUserReports(@Req() req: Request) {
+    return this.reportsService.findUserReports(req.user);
   }
 }

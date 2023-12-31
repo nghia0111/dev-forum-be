@@ -40,6 +40,11 @@ export enum TopicTypes {
   BUG = 'bug',
 }
 
+export enum ReportTypes {
+  COMMENT = 'comment',
+  USER = 'user',
+}
+
 export enum VoteTypes {
   UP_VOTE = 1,
   DOWN_VOTE = -1,
@@ -105,6 +110,9 @@ export enum ValidationErrorMessages {
   REPORT_NOT_FOUND = 'Không tìm thấy báo cáo',
 
   NOTI_NOT_FOUND = 'Không tìm thấy thông báo',
+
+  TRANSACTION_NOT_FOUND = 'Không tìm thấy giao dịch',
+  TRANSACTION_STATUS_INVALID = 'Trạng thái giao dịch không hợp lệ',
 
   WITHDRAW_NOT_FOUND = 'Không tìm thấy yêu cầu rút tiền',
 

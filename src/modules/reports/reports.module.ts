@@ -5,6 +5,7 @@ import { User, UserSchema } from 'src/schemas/users.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Report, ReportSchema } from 'src/schemas/reports.schema';
 import { Comment, CommentSchema } from 'src/schemas/comments.schema';
+import { Transaction, TransactionSchema } from 'src/schemas/transactions.schema';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { Comment, CommentSchema } from 'src/schemas/comments.schema';
       { name: Report.name, schema: ReportSchema },
       { name: Comment.name, schema: CommentSchema },
       { name: User.name, schema: UserSchema },
+      { name: Transaction.name, schema: TransactionSchema },
     ]),
   ],
   controllers: [ReportsController],

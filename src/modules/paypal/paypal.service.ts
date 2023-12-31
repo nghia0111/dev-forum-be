@@ -40,10 +40,7 @@ export class PaypalService {
       amount: depositDto.amount,
       type: TransactionTypes.DEPOSIT,
       status: TransactionStatus.SUCCEEDED,
-      message: generateMessage(
-        TransactionTypes.DEPOSIT,
-        depositDto.amount,
-      ),
+      message: generateMessage(TransactionTypes.DEPOSIT, depositDto.amount),
     });
   }
 
@@ -104,9 +101,11 @@ export class PaypalService {
       });
       existingWithdraw.status = TransactionStatus.SUCCEEDED;
       await existingWithdraw.save();
-      const existingTransaction = await this.transactionModel.findOne({withdraw: withdrawId});
-      if(existingTransaction){
-        existingTransaction.status = TransactionStatus.SUCCEEDED
+      const existingTransaction = await this.transactionModel.findOne({
+        withdraw: withdrawId,
+      });
+      if (existingTransaction) {
+        existingTransaction.status = TransactionStatus.SUCCEEDED;
         await existingTransaction.save();
       }
     } catch (error) {
@@ -138,8 +137,12 @@ export class PaypalService {
       type: TransactionTypes.WITHDRAW,
       withdraw: withdraw._id.toString(),
       status: TransactionStatus.PENDING,
-      message: generateMessage(TransactionTypes.WITHDRAW, withdrawDto.amount, withdrawDto.paypalEmail)
-    })
+      message: generateMessage(
+        TransactionTypes.WITHDRAW,
+        withdrawDto.amount,
+        withdrawDto.paypalEmail,
+      ),
+    });
   }
 
   async cancelWithdrawRequest(withdrawId: string, user: any) {
@@ -156,8 +159,10 @@ export class PaypalService {
     await currentUser.save();
     existingWithdraw.status = TransactionStatus.CANCELED;
     await existingWithdraw.save();
-    const existingTransaction = await this.transactionModel.findOne({withdraw: withdrawId});
-    if(existingTransaction){
+    const existingTransaction = await this.transactionModel.findOne({
+      withdraw: withdrawId,
+    });
+    if (existingTransaction) {
       existingTransaction.status = TransactionStatus.CANCELED;
       await existingTransaction.save();
     }
