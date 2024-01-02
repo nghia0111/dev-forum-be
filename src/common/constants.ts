@@ -59,73 +59,73 @@ export enum NotificationTypes {
 }
 
 export enum ValidationErrorMessages {
-  DISPLAY_NAME_LENGTH = 'Tên hiển thị phải từ 3 - 30 ký tự',
-  DISPLAY_NAME_REQUIRE = 'Vui lòng điền tên hiển thị',
+  DISPLAY_NAME_LENGTH = 'Display name must be between 3 and 30 characters',
+  DISPLAY_NAME_REQUIRE = 'Please enter a display name',
 
-  PASSWORD_PATTERN = 'Mật khẩu phải từ 8 - 32 ký tự và không chứa ký tự đặc biệt',
-  PASSWORD_REQUIRE = 'Vui lòng điền mật khẩu',
-  PASSWORD_INVALID = 'Mật khẩu không chính xác',
-  CONFIRMPASSWORD_INVALID = 'Mật khẩu xác nhận không trùng khớp',
+  PASSWORD_PATTERN = 'Password must be between 8 and 32 characters and not contain special characters',
+  PASSWORD_REQUIRE = 'Please enter a password',
+  PASSWORD_INVALID = 'Incorrect password',
+  CONFIRMPASSWORD_INVALID = 'Confirm password does not match',
 
-  EMAIL_INVALID = 'Địa chỉ email không hợp lệ',
-  EMAIL_REQUIRE = 'Vui lòng nhập địa chỉ email',
-  EMAIL_CONFLICT = 'Địa chỉ email đã tồn tại',
+  EMAIL_INVALID = 'Invalid email address',
+  EMAIL_REQUIRE = 'Please enter an email address',
+  EMAIL_CONFLICT = 'Email address already exists',
 
-  USER_NOT_FOUND = 'Email chưa được đăng ký',
+  USER_NOT_FOUND = 'Email is not registered',
 
-  FILE_INVALID = 'Ảnh không hợp lệ, vui lòng kiểm tra lại',
-  FILE_SIZE = 'Dung lượng ảnh không thể vượt quá 10MB',
+  FILE_INVALID = 'Invalid image, please check again',
+  FILE_SIZE = 'Image size cannot exceed 10MB',
 
-  TAGNAME_CONFLICT = 'Tên thẻ đã tồn tại',
-  TAGNAME_REQUIRE = 'Vui lòng điền tên thẻ',
-  TAG_REQUIRE = 'Vui lòng thêm chủ đề cho bài viết',
-  TAG_NOT_FOUND = 'Không tìm thấy thẻ',
+  TAGNAME_CONFLICT = 'Tag name already exists',
+  TAGNAME_REQUIRE = 'Please enter a tag name',
+  TAG_REQUIRE = 'Please add topic to the post',
+  TAG_NOT_FOUND = 'Tag not found',
 
-  TOPIC_INVALID = 'Tên chủ đề không hợp lệ',
+  TOPIC_INVALID = 'Invalid topic name',
 
-  TITLE_REQUIRE = 'Vui lòng điền tiêu đề bài viết',
-  DESCRIPTION_REQUIRE = 'Vui lòng điền mô tả bài viết',
-  POST_NOT_FOUND = 'Không tìm thấy bài viết',
-  POST_DELETE_CONFLICT = 'Không thể xoá bài viết đã tạo ra giao dịch',
-  POST_UPDATE_CONFLICT = 'Không thể cập nhật bài viết đã tạo ra giao dịch',
-  UPDATE_UNAUTHORIZATION = 'Chỉ có tác giả mới có thể cập nhật bài viết',
+  TITLE_REQUIRE = 'Please enter the post title',
+  DESCRIPTION_REQUIRE = 'Please enter the post description',
+  POST_NOT_FOUND = 'Post not found',
+  POST_DELETE_CONFLICT = 'Cannot delete a post that has generated transactions',
+  POST_UPDATE_CONFLICT = 'Cannot update a post that has generated transactions',
+  UPDATE_UNAUTHORIZATION = 'Only the author can update the post',
 
-  BOUNTY_INVALID = 'Số tiền không hợp lệ',
-  BOUNTY_MIN = 'Mức thưởng tối thiểu là 10000VND',
-  BOUNTY_NOT_ACCEPTABLE = 'Tiền thưởng chỉ áp dụng với bài viết sửa lỗi',
-  BOUNTY_REQUIRED = 'Chỉ được gửi yêu cầu đối với bài viết được treo thưởng',
-  BOUNTY_MAX = 'Không đủ số dư trong tài khoản',
+  BOUNTY_INVALID = 'Invalid amount',
+  BOUNTY_MIN = 'Minimum bounty is 10000VND',
+  BOUNTY_NOT_ACCEPTABLE = 'Bounty applies only to bug-fixing posts',
+  BOUNTY_REQUIRED = 'Bounty can only be requested for bounty-hanging posts',
+  BOUNTY_MAX = 'Insufficient balance in the account',
 
-  AMOUNT_MIN = 'Số tiền nạp tối thiểu là 1 USD',
-  AMOUNT_INVALID = 'Số tiền rút không thể vượt quá số dư',
+  AMOUNT_MIN = 'Minimum deposit amount is 1 USD',
+  AMOUNT_INVALID = 'Withdrawal amount cannot exceed the balance',
 
-  COMMENT_NOT_EMPTY = 'Bình luận không được để trống',
-  COMMENT_NOT_FOUND = 'Không tìm thấy bình luận',
+  COMMENT_NOT_EMPTY = 'Comment cannot be empty',
+  COMMENT_NOT_FOUND = 'Comment not found',
 
-  UNAUTHENTICATED = 'Vui lòng đăng nhập để sử dụng tính năng',
-  UNAUTHORIZED = 'Chỉ có tác giả mới có thể thực hiện thao tác',
+  UNAUTHENTICATED = 'Please log in to use this feature',
+  UNAUTHORIZED = 'Only the author can perform this action',
 
-  ADMIN_REQUIRED = 'Chỉ có quản trị viên mới được phép truy cập',
-  ADMIN_UNBANNABLE = 'Không thể thay đổi trạng thái của quản trị viên',
+  ADMIN_REQUIRED = 'Only administrators are allowed access',
+  ADMIN_UNBANNABLE = 'Cannot change the status of administrators',
 
-  REPORT_NOT_FOUND = 'Không tìm thấy báo cáo',
+  REPORT_NOT_FOUND = 'Report not found',
 
-  NOTI_NOT_FOUND = 'Không tìm thấy thông báo',
+  NOTI_NOT_FOUND = 'Notification not found',
 
-  TRANSACTION_NOT_FOUND = 'Không tìm thấy giao dịch',
-  TRANSACTION_STATUS_INVALID = 'Trạng thái giao dịch không hợp lệ',
+  TRANSACTION_NOT_FOUND = 'Transaction not found',
+  TRANSACTION_STATUS_INVALID = 'Invalid transaction status',
 
-  WITHDRAW_NOT_FOUND = 'Không tìm thấy yêu cầu rút tiền',
+  WITHDRAW_NOT_FOUND = 'Withdrawal request not found',
 
-  REQUEST_STATUS_INVALID = 'Trạng thái yêu cầu không hợp lệ',
-  REQUEST_CONFLICT = 'Vẫn còn yêu cầu đang được xử lý',
-  REQUEST_CLOSED = 'Không thể gửi yêu cầu kết nối do vấn đề đã được giải quyết',
+  REQUEST_STATUS_INVALID = 'Invalid request status',
+  REQUEST_CONFLICT = 'There are still pending requests',
+  REQUEST_CLOSED = 'Cannot send a connection request as the issue has been resolved',
 
-  USER_BANNED = 'Tài khoản của bạn đã bị khoá, vui lòng liên hệ đội ngũ phát triển để biết thêm chi tiết',
+  USER_BANNED = 'Your account has been suspended, please contact the development team for more details',
 
-  ID_INVALID = 'Id không hợp lệ',
+  ID_INVALID = 'Invalid ID',
 
-  SCORE_INVALID = 'Điểm đánh giá phải từ 1 sao đến 5 sao',
+  SCORE_INVALID = 'Rating must be between 1 star and 5 stars',
 }
 
 export const defaultAvatar =
