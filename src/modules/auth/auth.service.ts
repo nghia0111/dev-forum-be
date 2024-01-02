@@ -132,7 +132,7 @@ export class AuthService {
     });
     const posts = await this.postModel.find({
       author: userId,
-    }).populate('tags');
+    }).populate('tags').populate('author', 'displayName avatar');
     return {
       ...result,
       ratingCount: ratings.length,
