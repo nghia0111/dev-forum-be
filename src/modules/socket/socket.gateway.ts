@@ -120,8 +120,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     receiverId: any,
     type: string,
     message: string,
-    extraData: any,
-    senderAvatar: string
+    senderAvatar: string,
+    extraData?: any
   ) {
     let notification = await this.notificationModel.create({
       sender: senderId,

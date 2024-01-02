@@ -8,11 +8,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
   ConnectRequestStatus,
+  NotificationTypes,
   TransactionStatus,
   TransactionTypes,
   UserRole,
   ValidationErrorMessages,
   generateMessage,
+  generateNotiMessage,
 } from 'src/common/constants';
 import { Comment } from 'src/schemas/comments.schema';
 import { Report } from 'src/schemas/reports.schema';
@@ -21,6 +23,7 @@ import { ConnectRequestDto } from './dto/connect-request.dto';
 import { Post } from 'src/schemas/posts.schema';
 import { ConnectRequest } from 'src/schemas/connect-requests.schema';
 import { Transaction } from 'src/schemas/transactions.schema';
+import { SocketGateway } from '../socket/socket.gateway';
 
 @Injectable()
 export class ConnectRequestsService {
@@ -30,6 +33,7 @@ export class ConnectRequestsService {
     @InjectModel(Post.name) private postModel: Model<Post>,
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Transaction.name) private transactionModel: Model<Transaction>,
+    private readonly socketGateway: SocketGateway,
   ) {}
 
   async create(user: any, connectRequestDto: ConnectRequestDto) {
@@ -81,7 +85,7 @@ export class ConnectRequestsService {
     const existingRequest = await this.connectRequestModel
       .findById(requestId)
       .populate('post', 'bounty')
-      .populate('receiver', 'displayName')
+      .populate('receiver', 'displayName avatar')
       .populate('requester', 'displayName');
     if (existingRequest.status != ConnectRequestStatus.PENDING)
       throw new NotAcceptableException(
@@ -131,6 +135,13 @@ export class ConnectRequestsService {
         { status: ConnectRequestStatus.BLOCKING },
       ),
     ]);
+    await this.socketGateway.createNotification(
+      user.userId,
+      existingRequest.requester._id.toString(),
+      NotificationTypes.ACCEPT_REQUEST,
+      generateNotiMessage(NotificationTypes.ACCEPT_REQUEST, existingRequest.receiver.displayName),
+      existingRequest.receiver.avatar.secure_url
+    );
   }
 
   async cancelRequest(requestId: string, user: any) {
@@ -179,6 +190,10 @@ export class ConnectRequestsService {
     const receiver = await this.userModel.findById(existingRequest.requester);
     receiver.balance += existingRequest.post.bounty;
     await receiver.save();
+
+    await this.postModel.findByIdAndUpdate(existingRequest.post, {
+      isAnswered: true,
+    });
   }
 
   async findAll(user: any) {

@@ -8,6 +8,7 @@ import { Comment, CommentSchema } from 'src/schemas/comments.schema';
 import { Post, PostSchema } from 'src/schemas/posts.schema';
 import { ConnectRequest, ConnectRequestSchema } from 'src/schemas/connect-requests.schema';
 import { Transaction, TransactionSchema } from 'src/schemas/transactions.schema';
+import { SocketModule } from '../socket/socket.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { Transaction, TransactionSchema } from 'src/schemas/transactions.schema'
       { name: User.name, schema: UserSchema },
       { name: Transaction.name, schema: TransactionSchema },
     ]),
+    SocketModule,
   ],
   controllers: [ConnectRequestsController],
   providers: [ConnectRequestsService],

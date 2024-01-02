@@ -77,8 +77,8 @@ export class CommentsService {
         receiverId,
         notiType,
         generateNotiMessage(notiType, _user.displayName),
-        notiData,
         _user.avatar.secure_url,
+        notiData,
       );
     }
 
@@ -164,8 +164,8 @@ export class CommentsService {
         receiverId,
         NotificationTypes.DELETE_COMMENT,
         generateNotiMessage(NotificationTypes.DELETE_COMMENT),
-        notiData,
         defaultAvatar,
+        notiData,
       );
     }
   }

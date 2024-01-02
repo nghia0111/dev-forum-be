@@ -55,6 +55,7 @@ export enum NotificationTypes {
   COMMENT = 'comment',
   REPLY = 'reply',
   DELETE_COMMENT = 'delete_comment',
+  ACCEPT_REQUEST = 'accept_request'
 }
 
 export enum ValidationErrorMessages {
