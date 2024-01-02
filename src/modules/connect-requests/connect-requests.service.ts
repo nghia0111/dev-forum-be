@@ -11,19 +11,16 @@ import {
   NotificationTypes,
   TransactionStatus,
   TransactionTypes,
-  UserRole,
   ValidationErrorMessages,
   generateMessage,
-  generateNotiMessage,
+  generateNotiMessage
 } from 'src/common/constants';
-import { Comment } from 'src/schemas/comments.schema';
-import { Report } from 'src/schemas/reports.schema';
-import { User } from 'src/schemas/users.schema';
-import { ConnectRequestDto } from './dto/connect-request.dto';
-import { Post } from 'src/schemas/posts.schema';
 import { ConnectRequest } from 'src/schemas/connect-requests.schema';
+import { Post } from 'src/schemas/posts.schema';
 import { Transaction } from 'src/schemas/transactions.schema';
+import { User } from 'src/schemas/users.schema';
 import { SocketGateway } from '../socket/socket.gateway';
+import { ConnectRequestDto } from './dto/connect-request.dto';
 
 @Injectable()
 export class ConnectRequestsService {

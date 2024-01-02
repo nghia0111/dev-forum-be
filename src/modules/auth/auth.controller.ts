@@ -2,20 +2,20 @@ import {
   BadRequestException,
   Body,
   Controller,
-  HttpCode,
   Get,
+  HttpCode,
+  Param,
   Post,
   Request,
   UseGuards,
-  Param,
 } from '@nestjs/common';
 import { Public } from 'src/common/decorators';
 import { AuthService } from './auth.service';
-import { SignUpUserDto } from './dto/signup-user.dto';
-import { LocalAuthGuard } from './guards/local-auth.guard';
-import { ChangePasswordDto } from './dto/change-password.dto';
 import { ChangePasswordValidator, SignUpValidator, UpdateProfileValidator } from './auth.validator';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { SignUpUserDto } from './dto/signup-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller('auth')
 export class AuthController {

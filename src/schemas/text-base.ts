@@ -1,6 +1,5 @@
 import { Prop } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { User } from './users.schema';
 import { TimestampBase } from './timestamp-base';
 
 export class TextBase extends TimestampBase{

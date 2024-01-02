@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { RatingsService } from './ratings.service';
-import { RatingsController } from './ratings.controller';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConnectRequest, ConnectRequestSchema } from 'src/schemas/connect-requests.schema';
 import { Rating, RatingSchema } from 'src/schemas/ratings.schema';
 import { User, UserSchema } from 'src/schemas/users.schema';
-import { ConnectRequest, ConnectRequestSchema } from 'src/schemas/connect-requests.schema';
+import { RatingsController } from './ratings.controller';
+import { RatingsService } from './ratings.service';
 
 @Module({
   imports: [

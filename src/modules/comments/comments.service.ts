@@ -1,30 +1,26 @@
 import {
-  Inject,
   Injectable,
-  forwardRef,
   NotFoundException,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import * as jwt from 'jsonwebtoken';
 import { Model } from 'mongoose';
 import {
   NotificationTypes,
   UserRole,
   ValidationErrorMessages,
   VoteParentTypes,
-  VoteTypes,
   defaultAvatar,
-  generateNotiMessage,
+  generateNotiMessage
 } from 'src/common/constants';
-import * as jwt from 'jsonwebtoken';
-import { Vote } from 'src/schemas/votes.schema';
-import { PostsService } from '../posts/posts.service';
-import { Post } from 'src/schemas/posts.schema';
 import { Comment } from 'src/schemas/comments.schema';
-import { User } from 'src/schemas/users.schema';
-import { CommentDto } from './dto/comment.dto';
-import { SocketGateway } from '../socket/socket.gateway';
+import { Post } from 'src/schemas/posts.schema';
 import { Report } from 'src/schemas/reports.schema';
+import { User } from 'src/schemas/users.schema';
+import { PostsService } from '../posts/posts.service';
+import { SocketGateway } from '../socket/socket.gateway';
+import { CommentDto } from './dto/comment.dto';
 
 @Injectable()
 export class CommentsService {

@@ -1,15 +1,14 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Put,
   Param,
-  Delete,
-  Req,
+  Post,
+  Put,
+  Req
 } from '@nestjs/common';
-import { ReportsService } from './reports.service';
 import { Request } from 'express';
+import { ReportsService } from './reports.service';
 
 @Controller('reports')
 export class ReportsController {

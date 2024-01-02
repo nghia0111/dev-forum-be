@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { TimestampBase } from './timestamp-base';
 import { NotificationTypes } from 'src/common/constants';
+import { TimestampBase } from './timestamp-base';
 
 @Schema({ timestamps: true })
 export class Notification extends TimestampBase {

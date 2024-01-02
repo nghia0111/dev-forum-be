@@ -4,15 +4,15 @@ import {
   Controller,
   Delete,
   Get,
-  Put,
   Param,
   Post,
+  Put,
 } from '@nestjs/common';
 import * as Joi from 'joi';
 import { ValidationErrorMessages } from 'src/common/constants';
+import { Public } from 'src/common/decorators';
 import { TagDto } from './dto/tag.dto';
 import { TagsService } from './tags.service';
-import { Public } from 'src/common/decorators';
 
 @Controller('tags')
 export class TagsController {

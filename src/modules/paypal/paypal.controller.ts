@@ -1,18 +1,18 @@
 import {
-    BadRequestException,
-    Body,
-    Controller,
-    Param,
-    Post,
-    Get,
-    Put,
-    Req
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req
 } from '@nestjs/common';
 import { Request } from 'express';
 import { DepositDto } from './dto/deposit.dto';
+import { WithdrawDto } from './dto/withdraw.dto';
 import { PaypalService } from './paypal.service';
 import { DepositValidator, WithdrawValidator } from './paypal.validator';
-import { WithdrawDto } from './dto/withdraw.dto';
 
 @Controller('paypal')
 export class PaypalController {

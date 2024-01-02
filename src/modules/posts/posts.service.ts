@@ -209,8 +209,7 @@ export class PostsService {
     if (!post)
       throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
     const existingTransaction = await this.transactionModel.findOne({
-      post: id,
-      status: { $ne: TransactionStatus.CANCELED },
+      post: id
     });
     if (existingTransaction)
       throw new NotAcceptableException(
@@ -248,21 +247,6 @@ export class PostsService {
     if (userId) {
       currentUser = await this.userModel.findById(userId);
     }
-    // Use Promise.all for parallelizing vote retrieval for post and comments
-    // const [postVote] = await Promise.all([
-    //   this.getVoteType(post._id, VoteParentTypes.POST, userId),
-    //   // Parallelize vote retrieval for comments
-    //   Promise.all(
-    //     comments.map(async (comment) => ({
-    //       ...comment,
-    //       vote: await this.getVoteType(
-    //         comment._id,
-    //         VoteParentTypes.COMMENT,
-    //         userId,
-    //       ),
-    //     })),
-    //   ),
-    // ]);
 
     // Combine the results
     const newPost = {

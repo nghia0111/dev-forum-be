@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Comment, CommentSchema } from 'src/schemas/comments.schema';
-import { Post, PostSchema } from 'src/schemas/posts.schema';
-import { User, UserSchema } from 'src/schemas/users.schema';
 import {
   Notification,
   NotificationSchema,
 } from 'src/schemas/notifications.schema';
-import { SocketGateway } from './socket.gateway';
+import { Post, PostSchema } from 'src/schemas/posts.schema';
+import { User, UserSchema } from 'src/schemas/users.schema';
 import { AgoraModule } from '../agora/agora.module';
 import { PostsModule } from '../posts/posts.module';
+import { SocketGateway } from './socket.gateway';
 
 @Module({
   imports: [

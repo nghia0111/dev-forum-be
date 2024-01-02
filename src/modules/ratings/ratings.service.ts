@@ -4,16 +4,16 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { RatingDto } from './dto/rating.dto';
-import { Rating } from 'src/schemas/ratings.schema';
-import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { ConnectRequest } from 'src/schemas/connect-requests.schema';
-import { User } from 'src/schemas/users.schema';
+import { Model } from 'mongoose';
 import {
   ConnectRequestStatus,
   ValidationErrorMessages,
 } from 'src/common/constants';
+import { ConnectRequest } from 'src/schemas/connect-requests.schema';
+import { Rating } from 'src/schemas/ratings.schema';
+import { User } from 'src/schemas/users.schema';
+import { RatingDto } from './dto/rating.dto';
 
 @Injectable()
 export class RatingsService {

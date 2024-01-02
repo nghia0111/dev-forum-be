@@ -59,7 +59,9 @@ export class ReportsService {
       );
 
     const existingReport = await this.reportModel.findOne({
+      accuser: user.userId,
       accused: transaction.post.author,
+      post: transaction.post ? transaction.post._id.toString() : undefined,
     });
     if (
       !existingReport &&
@@ -72,6 +74,8 @@ export class ReportsService {
         transaction: transaction._id.toString(),
         type: ReportTypes.USER,
       });
+      transaction.isReported = true;
+      await transaction.save();
     }
   }
 

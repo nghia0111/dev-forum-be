@@ -3,12 +3,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { TagDto } from './dto/tag.dto';
-import { Tag } from 'src/schemas/tags.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ValidationErrorMessages } from 'src/common/constants';
 import { Post } from 'src/schemas/posts.schema';
+import { Tag } from 'src/schemas/tags.schema';
+import { TagDto } from './dto/tag.dto';
 
 @Injectable()
 export class TagsService {

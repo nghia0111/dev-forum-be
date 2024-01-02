@@ -1,14 +1,13 @@
-import { Module, forwardRef } from '@nestjs/common';
-import { MongooseModule, getModelToken } from '@nestjs/mongoose';
-import { Post, PostSchema } from 'src/schemas/posts.schema';
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { Comment, CommentSchema } from 'src/schemas/comments.schema';
-import { PostsModule } from '../posts/posts.module';
-import { CommentsService } from './comments.service';
-import { CommentsController } from './comments.controller';
-import { User, UserSchema } from 'src/schemas/users.schema';
-import { SocketGateway } from '../socket/socket.gateway';
-import { SocketModule } from '../socket/socket.module';
+import { Post, PostSchema } from 'src/schemas/posts.schema';
 import { Report, ReportSchema } from 'src/schemas/reports.schema';
+import { User, UserSchema } from 'src/schemas/users.schema';
+import { PostsModule } from '../posts/posts.module';
+import { SocketModule } from '../socket/socket.module';
+import { CommentsController } from './comments.controller';
+import { CommentsService } from './comments.service';
 
 @Module({
   imports: [

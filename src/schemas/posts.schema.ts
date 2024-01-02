@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
+import * as slug from 'mongoose-slug-generator';
 import { TopicTypes } from 'src/common/constants';
 import { TextBase } from './text-base';
-import * as slug from 'mongoose-slug-generator'
 @Schema({ timestamps: true })
 export class Post extends TextBase {
   @Prop()

@@ -1,15 +1,14 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Put,
   Param,
-  Delete,
-  Req,
+  Post,
+  Put,
+  Req
 } from '@nestjs/common';
-import { ConnectRequestsService } from './connect-requests.service';
 import { Request } from 'express';
+import { ConnectRequestsService } from './connect-requests.service';
 import { ConnectRequestDto } from './dto/connect-request.dto';
 
 @Controller('connect-requests')

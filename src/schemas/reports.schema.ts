@@ -1,7 +1,7 @@
-import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { TimestampBase } from './timestamp-base';
 import { ReportTypes } from 'src/common/constants';
+import { TimestampBase } from './timestamp-base';
 
 @Schema({ timestamps: true })
 export class Report extends TimestampBase {

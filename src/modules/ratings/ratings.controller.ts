@@ -1,13 +1,13 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   Post,
-  Body,
   Req,
-  BadRequestException,
 } from '@nestjs/common';
-import { RatingsService } from './ratings.service';
-import { RatingDto } from './dto/rating.dto';
 import { Request } from 'express';
+import { RatingDto } from './dto/rating.dto';
+import { RatingsService } from './ratings.service';
 import { RatingValidator } from './ratings.validator';
 
 @Controller('ratings')

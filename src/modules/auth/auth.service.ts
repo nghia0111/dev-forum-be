@@ -1,30 +1,30 @@
 import {
-  Injectable,
-  Inject,
   ConflictException,
+  Inject,
+  Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { SignUpUserDto } from './dto/signup-user.dto';
-import { User } from 'src/schemas/users.schema';
+import { JwtService } from '@nestjs/jwt';
+import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import {
   UserRole,
   ValidationErrorMessages,
   defaultAvatar,
 } from 'src/common/constants';
-import { LoginUserDto } from './dto/login.dto';
-import { JwtService } from '@nestjs/jwt';
-import { ChangePasswordDto } from './dto/change-password.dto';
-import { UpdateProfileDto } from './dto/update-profile.dto';
-import { Tag } from 'src/schemas/tags.schema';
-import { FirebaseService } from '../firebase/firebase.service';
-import { Rating } from 'src/schemas/ratings.schema';
 import { Comment } from 'src/schemas/comments.schema';
 import { Post } from 'src/schemas/posts.schema';
+import { Rating } from 'src/schemas/ratings.schema';
+import { Tag } from 'src/schemas/tags.schema';
+import { User } from 'src/schemas/users.schema';
+import { FirebaseService } from '../firebase/firebase.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { LoginUserDto } from './dto/login.dto';
+import { SignUpUserDto } from './dto/signup-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {

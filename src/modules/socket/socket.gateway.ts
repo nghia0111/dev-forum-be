@@ -1,28 +1,27 @@
+import { InjectModel } from '@nestjs/mongoose';
 import {
-  WebSocketGateway,
-  WebSocketServer,
+  ConnectedSocket,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  WsException,
   SubscribeMessage,
-  ConnectedSocket,
+  WebSocketGateway,
+  WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
-import { Socket, Server } from 'socket.io';
-import { PostsService } from '../posts/posts.service';
 import * as jwt from 'jsonwebtoken';
-import { InjectModel } from '@nestjs/mongoose';
-import { Post } from 'src/schemas/posts.schema';
 import { Model } from 'mongoose';
+import { Server, Socket } from 'socket.io';
 import {
   NotificationTypes,
   ValidationErrorMessages,
   generateNotiMessage,
 } from 'src/common/constants';
 import { Comment } from 'src/schemas/comments.schema';
-import { CommentValidator } from '../comments/comments.validator';
-import { AgoraService } from '../agora/agora.service';
-import { User } from 'src/schemas/users.schema';
 import { Notification } from 'src/schemas/notifications.schema';
+import { Post } from 'src/schemas/posts.schema';
+import { User } from 'src/schemas/users.schema';
+import { AgoraService } from '../agora/agora.service';
+import { PostsService } from '../posts/posts.service';
 
 @WebSocketGateway({ cors: true })
 export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {

@@ -1,20 +1,20 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
-  Post,
+  Delete,
   Get,
   Param,
+  Post,
+  Put,
   Query,
   Req,
-  Body,
-  BadRequestException,
-  Delete,
-  Put,
 } from '@nestjs/common';
-import { CommentsService } from './comments.service';
 import { Request } from 'express';
-import { CommentDto } from './dto/comment.dto';
-import { CommentValidator } from './comments.validator';
 import { Public } from 'src/common/decorators';
+import { CommentsService } from './comments.service';
+import { CommentValidator } from './comments.validator';
+import { CommentDto } from './dto/comment.dto';
 
 @Controller('comments')
 export class CommentsController {

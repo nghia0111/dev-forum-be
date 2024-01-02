@@ -1,6 +1,7 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Comment, CommentSchema } from 'src/schemas/comments.schema';
+import { Notification, NotificationSchema } from 'src/schemas/notifications.schema';
 import { Post, PostSchema } from 'src/schemas/posts.schema';
 import { Tag, TagSchema } from 'src/schemas/tags.schema';
 import {
@@ -11,7 +12,6 @@ import { User, UserSchema } from 'src/schemas/users.schema';
 import { Vote, VoteSchema } from 'src/schemas/votes.schema';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
-import { Notification, NotificationSchema } from 'src/schemas/notifications.schema';
 
 @Module({
   imports: [
