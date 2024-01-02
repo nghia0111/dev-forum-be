@@ -1,11 +1,11 @@
-import { Inject, Injectable, forwardRef, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ValidationErrorMessages, VoteParentTypes, VoteTypes } from 'src/common/constants';
+import { Comment } from 'src/schemas/comments.schema';
+import { Post } from 'src/schemas/posts.schema';
 import { Vote } from 'src/schemas/votes.schema';
 import { PostsService } from '../posts/posts.service';
-import { Post } from 'src/schemas/posts.schema';
-import { Comment } from 'src/schemas/comments.schema';
 import { SocketGateway } from '../socket/socket.gateway';
 
 @Injectable()
@@ -71,11 +71,5 @@ export class VotesService {
     this.socketGateway.server
       .to(postId)
       .emit('updatePost', postData);
-
-    // voteParent = voteParent.toObject();
-    // if (parentType == VoteParentTypes.COMMENT) {
-    //   return { ...voteParent, vote: vote };
-    // }
-    // return;
   }
 }

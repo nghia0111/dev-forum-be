@@ -1,7 +1,7 @@
-import { Schema, Prop, SchemaFactory, raw } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { TimestampBase } from './timestamp-base';
 import { TransactionStatus, TransactionTypes } from 'src/common/constants';
+import { TimestampBase } from './timestamp-base';
 
 @Schema({ timestamps: true })
 export class Transaction extends TimestampBase {
@@ -35,6 +35,10 @@ export class Transaction extends TimestampBase {
     default: TransactionStatus.PENDING,
   })
   status;
+
+  // for report user
+  @Prop({ default: false })
+  isReported: boolean;
 }
 
 export const TransactionSchema = SchemaFactory.createForClass(Transaction);
