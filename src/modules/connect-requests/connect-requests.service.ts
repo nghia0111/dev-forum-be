@@ -39,8 +39,12 @@ export class ConnectRequestsService {
       throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
     if (!post.bounty)
       throw new NotAcceptableException(ValidationErrorMessages.BOUNTY_REQUIRED);
-    const existingTransaction = await this.transactionModel.findOne({post: postId, status: TransactionStatus.SUCCEEDED});
-    if(existingTransaction) throw new NotAcceptableException(ValidationErrorMessages.REQUEST_CLOSED)
+    const existingTransaction = await this.transactionModel.findOne({
+      post: postId,
+      status: TransactionStatus.SUCCEEDED,
+    });
+    if (existingTransaction)
+      throw new NotAcceptableException(ValidationErrorMessages.REQUEST_CLOSED);
 
     const existingRequest = await this.connectRequestModel.findOne({
       requester: user.userId,
@@ -51,12 +55,26 @@ export class ConnectRequestsService {
       existingRequest.status != ConnectRequestStatus.CANCELED
     )
       return;
-    await this.connectRequestModel.create({
-      requester: user.userId,
-      receiver: post.author,
+    const processingRequest = await this.connectRequestModel.findOne({
       post: postId,
-      message: message,
+      status: ConnectRequestStatus.PROCESSING,
     });
+    if (processingRequest) {
+      await this.connectRequestModel.create({
+        requester: user.userId,
+        receiver: post.author,
+        post: postId,
+        status: ConnectRequestStatus.BLOCKING,
+        message: message,
+      });
+    } else {
+      await this.connectRequestModel.create({
+        requester: user.userId,
+        receiver: post.author,
+        post: postId,
+        message: message,
+      });
+    }
   }
 
   async acceptRequest(requestId: string, user: any) {
