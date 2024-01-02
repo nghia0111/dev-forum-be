@@ -185,7 +185,10 @@ export class PostsService {
       );
     const _user = await this.userModel.findById(user.userId);
     if (updatePostDto.bounty) {
-      if (updatePostDto.bounty > _user.balance + post.bounty) {
+      if (
+        updatePostDto.bounty >
+        _user.balance + (post.bounty ? post.bounty : 0)
+      ) {
         throw new NotAcceptableException(ValidationErrorMessages.BOUNTY_MAX);
       }
       _user.balance = _user.balance + post.bounty - updatePostDto.bounty;
@@ -206,16 +209,14 @@ export class PostsService {
       throw new NotFoundException(ValidationErrorMessages.POST_NOT_FOUND);
     const existingTransaction = await this.transactionModel.findOne({
       post: id,
-      status: {$ne: TransactionStatus.CANCELED}
+      status: { $ne: TransactionStatus.CANCELED },
     });
     if (existingTransaction)
       throw new NotAcceptableException(
         ValidationErrorMessages.POST_DELETE_CONFLICT,
       );
     if (post.author != user.userId)
-      throw new UnauthorizedException(
-        ValidationErrorMessages.UNAUTHORIZED,
-      );
+      throw new UnauthorizedException(ValidationErrorMessages.UNAUTHORIZED);
     const _user = await this.userModel.findById(user.userId);
     if (post.bounty) {
       _user.balance = _user.balance + post.bounty;
