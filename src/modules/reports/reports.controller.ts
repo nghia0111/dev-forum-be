@@ -27,9 +27,14 @@ export class ReportsController {
     return this.reportsService.reportUser(req.user, transactionId);
   }
 
-  @Put(':reportId')
+  @Put(':reportId/accept')
   acceptReport(@Param('reportId') reportId: string) {
     return this.reportsService.acceptReport(reportId);
+  }
+
+  @Put(':reportId/reject')
+  rejectReport(@Param('reportId') reportId: string) {
+    return this.reportsService.rejectReport(reportId);
   }
 
   @Get('comments')

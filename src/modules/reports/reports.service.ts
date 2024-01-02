@@ -106,6 +106,15 @@ export class ReportsService {
     await report.save();
   }
 
+  async rejectReport(reportId: string) {
+    const report = await this.reportModel.findById(reportId);
+    if (!report)
+      throw new NotFoundException(ValidationErrorMessages.REPORT_NOT_FOUND);
+
+    report.isReviewed = true;
+    await report.save();
+  }
+
   async findCommentReports(user: any) {
     const _user = await this.userModel.findById(user.userId);
     if (!_user || _user.role != UserRole.ADMIN)
@@ -124,6 +133,7 @@ export class ReportsService {
       .find({ type: ReportTypes.USER })
       .sort('-createdAt')
       .populate('accuser', 'displayName avatar')
-      .populate('accused', 'displayName');
+      .populate('accused', 'displayName')
+      .populate('transaction', 'message');
   }
 }
