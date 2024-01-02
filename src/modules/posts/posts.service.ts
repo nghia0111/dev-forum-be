@@ -191,7 +191,8 @@ export class PostsService {
       ) {
         throw new NotAcceptableException(ValidationErrorMessages.BOUNTY_MAX);
       }
-      _user.balance = _user.balance + post.bounty - updatePostDto.bounty;
+      _user.balance =
+        _user.balance + (post.bounty ? post.bounty : 0) - updatePostDto.bounty;
       await _user.save();
     }
     post.title = updatePostDto.title;

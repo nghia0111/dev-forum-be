@@ -23,7 +23,7 @@ export class ReportsController {
   @Post('users')
   reportUser(
     @Req() req: Request,
-    @Param('transactionId') transactionId: string,
+    @Body('transactionId') transactionId: string,
   ) {
     return this.reportsService.reportUser(req.user, transactionId);
   }
