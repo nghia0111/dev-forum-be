@@ -167,6 +167,8 @@ export const generateNotiMessage = (
       return `${partnerName} đã trả lời bình luận của bạn`;
     case NotificationTypes.DELETE_COMMENT:
       return `Bình luận của bạn đã bị xoá do vi phạm tiêu chuẩn cộng đồng`;
+    case NotificationTypes.ACCEPT_REQUEST:
+      return `${partnerName} đã chấp nhận yêu cầu kết nối của bạn`;
     default:
       return '';
   }

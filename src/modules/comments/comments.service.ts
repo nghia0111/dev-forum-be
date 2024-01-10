@@ -62,7 +62,7 @@ export class CommentsService {
     const postData = await this.postService.getPostData(postId);
     this.socketGateway.server.to(postId).emit('updatePost', postData);
 
-    if (user.userId != receiverId) {
+    if (user.userId != receiverId.toString()) {
       const notiData = {
         commentId: comment._id.toString(),
         postSlug: postSlug,
